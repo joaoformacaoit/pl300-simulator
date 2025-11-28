@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador PL-300 - Power BI Data Analyst</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // 🔧 ADICIONA AS TUAS PERGUNTAS AQUI
+        const examQuestions = [
+          {
+            id: 1,
+            question: "Qual é a principal função do Power Query no Power BI?",
+            options: [
+              "Criar visualizações interativas",
+              "Transformar e preparar dados",
+              "Partilhar relatórios online",
+              "Gerir permissões de utilizadores"
+            ],
+            correctAnswer: 1,
+            explanation: "O Power Query é a ferramenta de ETL (Extract, Transform, Load) do Power BI, utilizada para transformar e preparar dados antes da modelação."
+          },
+          {
+            id: 2,
+            question: "Que tipo de relação deve ser criada entre uma tabela de factos e uma tabela de dimensão?",
+            options: [
+              "Muitos para muitos",
+              "Um para um",
+              "Um para muitos",
+              "Nenhuma relação é necessária"
+            ],
+            correctAnswer: 2,
+            explanation: "A relação correta é Um para Muitos (1:*), onde o lado 'Um' está na tabela de dimensão e o lado 'Muitos' na tabela de factos."
+          },
+          {
+            id: 3,
+            question: "Qual função DAX retorna o número de linhas numa tabela?",
+            options: [
+              "COUNT()",
+              "COUNTA()",
+              "COUNTROWS()",
+              "DISTINCTCOUNT()"
+            ],
+            correctAnswer: 2,
+            explanation: "COUNTROWS() conta todas as linhas numa tabela, independentemente dos valores. COUNT() conta apenas valores numéricos não em branco."
+          },
+          {
+            id: 4,
+            question: "O que é um filtro de contexto no Power BI?",
+            options: [
+              "Um filtro visual aplicado a um gráfico",
+              "Um filtro que afeta o cálculo de medidas DAX",
+              "Um filtro de segurança ao nível da linha",
+              "Um filtro aplicado no Power Query"
+            ],
+            correctAnswer: 1,
+            explanation: "O contexto de filtro determina que linhas de dados são incluídas num cálculo DAX, afetando o resultado das medidas."
+          },
+          {
+            id: 5,
+            question: "Qual é a diferença principal entre uma medida e uma coluna calculada?",
+            options: [
+              "As medidas são calculadas em tempo de consulta, as colunas calculadas são armazenadas",
+              "As colunas calculadas são mais rápidas que as medidas",
+              "As medidas não podem usar DAX",
+              "Não há diferença significativa"
+            ],
+            correctAnswer: 0,
+            explanation: "As medidas são calculadas dinamicamente quando necessário (tempo de consulta), enquanto as colunas calculadas são calculadas e armazenadas durante o refresh dos dados."
+          },
+          {
+            id: 6,
+            question: "Que visual do Power BI é melhor para mostrar a evolução de valores ao longo do tempo?",
+            options: [
+              "Gráfico de pizza",
+              "Matriz",
+              "Gráfico de linhas",
+              "Cartão"
+            ],
+            correctAnswer: 2,
+            explanation: "O gráfico de linhas é ideal para mostrar tendências temporais, permitindo visualizar facilmente padrões e mudanças ao longo do tempo."
+          },
+          {
+            id: 7,
+            question: "O que é o Row-Level Security (RLS) no Power BI?",
+            options: [
+              "Um tipo de relação entre tabelas",
+              "Uma função DAX para filtrar linhas",
+              "Um mecanismo para restringir acesso a dados baseado no utilizador",
+              "Uma configuração de performance"
+            ],
+            correctAnswer: 2,
+            explanation: "RLS permite restringir o acesso a dados ao nível da linha baseado no utilizador, garantindo que cada pessoa vê apenas os dados autorizados."
+          },
+          {
+            id: 8,
+            question: "Qual destas é uma boa prática para melhorar a performance de um modelo de dados?",
+            options: [
+              "Importar todas as colunas disponíveis",
+              "Usar apenas medidas implícitas",
+              "Remover colunas e linhas desnecessárias",
+              "Criar o máximo de relações possível"
+            ],
+            correctAnswer: 2,
+            explanation: "Remover dados desnecessários reduz o tamanho do modelo e melhora significativamente a performance de queries e visualizações."
+          },
+          {
+            id: 9,
+            question: "Que função DAX é usada para criar uma tabela calculada de datas?",
+            options: [
+              "CALENDAR()",
+              "DATE()",
+              "DATEVALUE()",
+              "TODAY()"
+            ],
+            correctAnswer: 0,
+            explanation: "CALENDAR() gera uma tabela de datas contínuas entre duas datas especificadas, essencial para análises temporais corretas."
+          },
+          {
+            id: 10,
+            question: "Qual o modo de conectividade que não carrega dados para o Power BI Desktop?",
+            options: [
+              "Import",
+              "DirectQuery",
+              "Dual",
+              "Composite"
+            ],
+            correctAnswer: 1,
+            explanation: "DirectQuery mantém os dados na fonte original e executa queries em tempo real, sem importar ou armazenar dados no modelo Power BI."
+          }
+        ];
+
+        // Ícones SVG
+        const ClockIcon = () => (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        );
+
+        const CheckCircleIcon = ({ filled }) => (
+          <svg className="w-5 h-5" fill={filled ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        );
+
+        const AlertCircleIcon = () => (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        );
+
+        const FlagIcon = ({ filled }) => (
+          <svg className="w-5 h-5" fill={filled ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+          </svg>
+        );
+
+        const AwardIcon = () => (
+          <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+        );
+
+        const ArrowRightIcon = () => (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        );
+
+        const ArrowLeftIcon = () => (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        );
+
+        const RotateCcwIcon = () => (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        );
+
+        const ExamSimulator = () => {
+          const [started, setStarted] = useState(false);
+          const [finished, setFinished] = useState(false);
+          const [currentQuestion, setCurrentQuestion] = useState(0);
+          const [answers, setAnswers] = useState({});
+          const [flagged, setFlagged] = useState(new Set());
+          const [timeLeft, setTimeLeft] = useState(60 * 60);
+
+          useEffect(() => {
+            if (started && !finished && timeLeft > 0) {
+              const timer = setInterval(() => {
+                setTimeLeft(prev => prev - 1);
+              }, 1000);
+              return () => clearInterval(timer);
+            } else if (timeLeft === 0 && !finished) {
+              handleFinish();
+            }
+          }, [started, finished, timeLeft]);
+
+          const formatTime = (seconds) => {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+          };
+
+          const handleStart = () => setStarted(true);
+
+          const handleAnswer = (questionId, answerIndex) => {
+            setAnswers({ ...answers, [questionId]: answerIndex });
+          };
+
+          const handleFlag = (questionId) => {
+            const newFlagged = new Set(flagged);
+            if (newFlagged.has(questionId)) {
+              newFlagged.delete(questionId);
+            } else {
+              newFlagged.add(questionId);
+            }
+            setFlagged(newFlagged);
+          };
+
+          const handleFinish = () => setFinished(true);
+
+          const calculateScore = () => {
+            let correct = 0;
+            examQuestions.forEach(q => {
+              if (answers[q.id] === q.correctAnswer) correct++;
+            });
+            return {
+              correct,
+              total: examQuestions.length,
+              percentage: Math.round((correct / examQuestions.length) * 100)
+            };
+          };
+
+          const handleRestart = () => {
+            setStarted(false);
+            setFinished(false);
+            setCurrentQuestion(0);
+            setAnswers({});
+            setFlagged(new Set());
+            setTimeLeft(60 * 60);
+          };
+
+          if (!started) {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
+                <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl p-8">
+                  <div className="text-center mb-8">
+                    <div className="inline-block p-4 bg-blue-600 rounded-full mb-4">
+                      <AwardIcon />
+                    </div>
+                    <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                      Simulador de Exame PL-300
+                    </h1>
+                    <p className="text-xl text-gray-600">
+                      Microsoft Power BI Data Analyst
+                    </p>
+                  </div>
+
+                  <div className="bg-blue-50 rounded-xl p-6 mb-8">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Informações do Exame:</h2>
+                    <ul className="space-y-3 text-gray-700">
+                      <li className="flex items-start">
+                        <div className="mt-0.5 mr-3"><CheckCircleIcon filled={false} /></div>
+                        <span><strong>{examQuestions.length} questões</strong> de escolha múltipla</span>
+                      </li>
+                      <li className="flex items-start">
+                        <div className="mt-0.5 mr-3"><ClockIcon /></div>
+                        <span><strong>60 minutos</strong> para completar</span>
+                      </li>
+                      <li className="flex items-start">
+                        <div className="mt-0.5 mr-3"><FlagIcon filled={false} /></div>
+                        <span>Podes <strong>marcar questões</strong> para revisão posterior</span>
+                      </li>
+                      <li className="flex items-start">
+                        <div className="mt-0.5 mr-3"><AlertCircleIcon /></div>
+                        <span>Pontuação mínima para aprovação: <strong>70%</strong></span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <button
+                    onClick={handleStart}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 text-lg shadow-lg hover:shadow-xl"
+                  >
+                    Iniciar Exame
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          if (finished) {
+            const score = calculateScore();
+            const passed = score.percentage >= 70;
+
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
+                <div className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl p-8">
+                  <div className="text-center mb-8">
+                    <div className={`inline-block p-4 rounded-full mb-4 ${passed ? 'bg-green-600' : 'bg-red-600'}`}>
+                      {passed ? <CheckCircleIcon filled={true} /> : <AlertCircleIcon />}
+                    </div>
+                    <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                      {passed ? 'Parabéns! Aprovado!' : 'Não Aprovado'}
+                    </h1>
+                    <p className="text-xl text-gray-600">
+                      Pontuação Final: {score.percentage}%
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    <div className="bg-blue-50 rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold text-blue-600 mb-2">{score.correct}</div>
+                      <div className="text-gray-600">Corretas</div>
+                    </div>
+                    <div className="bg-red-50 rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold text-red-600 mb-2">{score.total - score.correct}</div>
+                      <div className="text-gray-600">Incorretas</div>
+                    </div>
+                    <div className="bg-purple-50 rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold text-purple-600 mb-2">{score.total}</div>
+                      <div className="text-gray-600">Total</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-xl p-6 mb-8">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">Revisão de Respostas:</h2>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {examQuestions.map((q, idx) => {
+                        const isCorrect = answers[q.id] === q.correctAnswer;
+                        const wasAnswered = answers[q.id] !== undefined;
+                        
+                        return (
+                          <div key={q.id} className={`p-4 rounded-lg border-2 ${
+                            !wasAnswered ? 'bg-gray-100 border-gray-300' :
+                            isCorrect ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'
+                          }`}>
+                            <div className="flex items-start justify-between mb-2">
+                              <h3 className="font-semibold text-gray-800">Questão {idx + 1}</h3>
+                              {!wasAnswered ? (
+                                <span className="text-xs bg-gray-500 text-white px-2 py-1 rounded">Não respondida</span>
+                              ) : isCorrect ? (
+                                <CheckCircleIcon filled={true} />
+                              ) : (
+                                <AlertCircleIcon />
+                              )}
+                            </div>
+                            <p className="text-gray-700 mb-3">{q.question}</p>
+                            {wasAnswered && !isCorrect && (
+                              <div className="space-y-2">
+                                <p className="text-sm text-red-700">
+                                  <strong>Tua resposta:</strong> {q.options[answers[q.id]]}
+                                </p>
+                                <p className="text-sm text-green-700">
+                                  <strong>Resposta correta:</strong> {q.options[q.correctAnswer]}
+                                </p>
+                              </div>
+                            )}
+                            <p className="text-sm text-gray-600 mt-2 italic">{q.explanation}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleRestart}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 text-lg shadow-lg hover:shadow-xl flex items-center justify-center"
+                  >
+                    <div className="mr-2"><RotateCcwIcon /></div>
+                    Tentar Novamente
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          const question = examQuestions[currentQuestion];
+          const progress = ((currentQuestion + 1) / examQuestions.length) * 100;
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+              <div className="max-w-4xl mx-auto">
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h1 className="text-2xl font-bold text-gray-800">Exame PL-300</h1>
+                      <p className="text-gray-600">Questão {currentQuestion + 1} de {examQuestions.length}</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center bg-blue-100 px-4 py-2 rounded-lg">
+                        <div className="mr-2"><ClockIcon /></div>
+                        <span className="font-mono font-semibold text-blue-600">
+                          {formatTime(timeLeft)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-lg p-8 mb-4">
+                  <div className="flex justify-between items-start mb-6">
+                    <h2 className="text-xl font-semibold text-gray-800 flex-1">
+                      {question.question}
+                    </h2>
+                    <button
+                      onClick={() => handleFlag(question.id)}
+                      className={`ml-4 p-2 rounded-lg transition ${
+                        flagged.has(question.id) 
+                          ? 'bg-yellow-100 text-yellow-600' 
+                          : 'bg-gray-100 text-gray-400 hover:text-yellow-600'
+                      }`}
+                    >
+                      <FlagIcon filled={flagged.has(question.id)} />
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {question.options.map((option, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleAnswer(question.id, idx)}
+                        className={`w-full text-left p-4 rounded-lg border-2 transition ${
+                          answers[question.id] === idx
+                            ? 'border-blue-600 bg-blue-50'
+                            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
+                            answers[question.id] === idx
+                              ? 'border-blue-600 bg-blue-600'
+                              : 'border-gray-300'
+                          }`}>
+                            {answers[question.id] === idx && (
+                              <div className="w-2 h-2 bg-white rounded-full" />
+                            )}
+                          </div>
+                          <span className="text-gray-700">{option}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <div className="flex justify-between items-center">
+                    <button
+                      onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
+                      disabled={currentQuestion === 0}
+                      className="flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    >
+                      <div className="mr-2"><ArrowLeftIcon /></div>
+                      Anterior
+                    </button>
+
+                    <div className="flex flex-wrap gap-2 max-w-md">
+                      {examQuestions.map((q, idx) => (
+                        <button
+                          key={q.id}
+                          onClick={() => setCurrentQuestion(idx)}
+                          className={`w-10 h-10 rounded-lg font-semibold transition ${
+                            currentQuestion === idx
+                              ? 'bg-blue-600 text-white'
+                              : answers[q.id] !== undefined
+                              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                              : flagged.has(q.id)
+                              ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          {idx + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    {currentQuestion === examQuestions.length - 1 ? (
+                      <button
+                        onClick={handleFinish}
+                        className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
+                      >
+                        Terminar Exame
+                        <div className="ml-2"><CheckCircleIcon filled={false} /></div>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setCurrentQuestion(Math.min(examQuestions.length - 1, currentQuestion + 1))}
+                        className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                      >
+                        Próxima
+                        <div className="ml-2"><ArrowRightIcon /></div>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<ExamSimulator />, document.getElementById('root'));
+    </script>
+</body>
+</html>
