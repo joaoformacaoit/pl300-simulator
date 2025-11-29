@@ -42,16 +42,6 @@
             font-size: 1.2em;
             font-weight: 600;
         }
-        .timer {
-            background-color: #0078d4;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
-            display: flex;
-            align-items: center;
-        }
         .progress-bar-container {
             width: 100%;
             height: 6px;
@@ -63,6 +53,11 @@
             background-color: #0078d4;
             transition: width 0.3s ease;
         }
+        .question-counter {
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #666;
+        }
 
         /* --- Content Area (Questions/Results) --- */
         .content {
@@ -72,9 +67,10 @@
         .question-text {
             font-size: 1.4em;
             font-weight: 500;
-            margin-bottom: 25px;
+            margin-bottom: 25px; 
             line-height: 1.4;
         }
+        /* Removed .instruction CSS as element is no longer needed */
 
         /* --- Options List --- */
         .options-list {
@@ -105,7 +101,7 @@
             cursor: pointer;
             font-size: 1.1em;
             font-weight: 400;
-            user-select: none; /* Prevent text selection on click */
+            user-select: none;
         }
 
         /* --- Footer & Navigation --- */
@@ -140,7 +136,7 @@
             background-color: #005a9e;
         }
         #finish-btn {
-            background-color: #107c10; /* Green for finish */
+            background-color: #107c10;
         }
         #finish-btn:hover {
             background-color: #0c6a0c;
@@ -171,10 +167,10 @@
             font-weight: bold;
         }
         .pager-item.answered {
-            background-color: #d1e7dd; /* Light green */
+            background-color: #d1e7dd;
         }
         .pager-item.active.answered {
-            background-color: #0078d4; /* Keep blue for active */
+            background-color: #0078d4;
         }
 
         /* --- Results/Feedback --- */
@@ -183,7 +179,7 @@
             padding: 15px;
             border-radius: 6px;
             font-size: 1.1em;
-            display: none; /* Initially hidden */
+            display: none;
         }
         .feedback.correct {
             background-color: #d4edda;
@@ -283,6 +279,27 @@
         .score-box.incorrect { background-color: #f8d7da; color: #842029; }
         .score-box.total { background-color: #cce5ff; color: #004085; }
         
+        .review-toggle-btn {
+            padding: 12px 30px;
+            margin-top: 20px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .review-toggle-btn:hover {
+             background-color: #005a9e;
+        }
+
+        /* CSS to hide the review list by default */
+        #review-container {
+            display: none;
+            margin-top: 30px;
+        }
+
         .result-review-item {
             border: 1px solid #e0e0e0;
             border-radius: 8px;
@@ -311,8 +328,8 @@
 
     <div class="container">
         <div class="header" id="quiz-header" style="display: none;">
-            <h2 id="exam-title">Exame PL-300</h2>
-            <div class="timer" id="timer-display"><i class="fas fa-clock"></i> 59:47</div>
+            <h2 id="exam-title">PL-300 Exam</h2>
+            <div class="question-counter" id="question-counter">Question 1 of 30</div>
         </div>
         <div class="progress-bar-container" id="progress-container" style="display: none;">
             <div class="progress-bar" id="progress-bar"></div>
@@ -321,18 +338,14 @@
         <div class="content">
             <div id="start-screen">
                 <i class="fas fa-check-circle" style="font-size: 4em; color: #0078d4; margin-bottom: 20px;"></i>
-                <h1>Simulador de Exame PL-300</h1>
+                <h1>PL-300 Exam Simulator</h1>
                 <p>Microsoft Power BI Data Analyst</p>
                 
-                <h2>Informações do Exame:</h2>
-                <ul class="info-list">
-                    <li><i class="fas fa-check-circle"></i> **10 questões** de escolha múltipla (Aumente o número no código!)</li>
-                    <li><i class="fas fa-check-circle"></i> **60 minutos** para completar</li>
-                    <li><i class="fas fa-check-circle"></i> As questões podem ter **uma ou mais** respostas corretas.</li>
-                    <li><i class="fas fa-check-circle"></i> Pontuação mínima para aprovação: **70%**</li>
-                </ul>
+                <h2>Exam Information:</h2>
+                <ul class="info-list" id="start-info-list">
+                    </ul>
                 
-                <button id="start-btn">Iniciar Exame</button>
+                <button id="start-btn">Start Exam</button>
             </div>
 
             <div id="quiz-screen" style="display: none;">
@@ -341,57 +354,73 @@
                 <div class="feedback" id="feedback-message"></div>
                 
                 <div style="text-align: right; margin-top: 10px;">
-                    <i id="flag-icon" class="fas fa-flag" style="color: #6c757d; cursor: pointer;" title="Marcar para Revisão"></i>
+                    <i id="flag-icon" class="fas fa-flag" style="color: #6c757d; cursor: pointer;" title="Flag for Review"></i>
                 </div>
             </div>
 
             <div id="final-results-screen" style="display: none;">
-                <h2 id="pass-fail-status">Não Aprovado</h2>
-                <p id="final-score-text">Pontuação Final: 10%</p>
+                <h2 id="pass-fail-status">Not Passed</h2>
+                <p id="final-score-text">Final Score: 10%</p>
                 <div class="score-summary">
                     <div class="score-box correct">
                         <h3 id="correct-count">1</h3>
-                        <p>Corretas</p>
+                        <p>Correct</p>
                     </div>
                     <div class="score-box incorrect">
-                        <h3 id="incorrect-count">9</h3>
-                        <p>Incorretas</p>
+                        <h3 id="incorrect-count">29</h3>
+                        <p>Incorrect</p>
                     </div>
                     <div class="score-box total">
-                        <h3 id="total-count">10</h3>
+                        <h3 id="total-count">30</h3>
                         <p>Total</p>
                     </div>
                 </div>
                 
-                <h3>Revisão de Respostas:</h3>
-                <div id="review-list">
-                    </div>
+                <button class="review-toggle-btn" id="review-toggle-btn">
+                    <i class="fas fa-eye"></i> Show Answer Review
+                </button>
+                
+                <div id="review-container">
+                    <h3>Answer Review:</h3>
+                    <div id="review-list">
+                        </div>
+                </div>
             </div>
             
         </div>
 
         <div class="footer" id="quiz-footer" style="display: none;">
             <div class="nav-buttons">
-                <button id="prev-btn" style="display: none;"><i class="fas fa-arrow-left"></i> Anterior</button>
+                <button id="prev-btn" style="display: none;"><i class="fas fa-arrow-left"></i> Previous</button>
             </div>
             <div class="pager" id="pager-container">
                 </div>
             <div class="nav-buttons">
-                <button id="next-btn">Próxima <i class="fas fa-arrow-right"></i></button>
-                <button id="finish-btn" style="display: none;"><i class="fas fa-check-circle"></i> Terminar Exame</button>
+                <button id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
+                <button id="finish-btn" style="display: none;"><i class="fas fa-check-circle"></i> Finish Exam</button>
             </div>
         </div>
 
     </div>
 
     <script>
+        /**
+         * Converts Markdown bold syntax (**text**) to HTML strong tags (<strong>text</strong>).
+         * @param {string} text - The input string with Markdown.
+         * @returns {string} The output string with HTML strong tags.
+         */
+        function markdownToHtmlBold(text) {
+            // This replaces **text** with <strong>text</strong>
+            return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
+
         const quizQuestions = [
             // Question 1: Data Preparation (Import/DirectQuery)
             {
                 id: 1,
                 topic: "Data Preparation",
                 level: "Intermediate",
-                question: "Qual o modo de conectividade que **não** carrega dados para o Power BI Desktop, mantendo a fonte de dados como a única verdade?",
+                question: "Which connectivity mode does **not** load data into the Power BI Desktop model, maintaining the data source as the single source of truth?",
                 options: [
                     "Import",
                     "DirectQuery",
@@ -399,29 +428,29 @@
                     "Composite"
                 ],
                 correctAnswers: [1], // DirectQuery
-                explanation: "**DirectQuery** é o modo que consulta diretamente a fonte de dados (como SQL Server) em tempo real, sem carregar os dados para o modelo do Power BI Desktop. Import carrega dados, e Dual/Composite são modos híbridos."
+                explanation: "<strong>DirectQuery</strong> is the mode that queries the data source (such as SQL Server) in real-time, without loading the data into the Power BI Desktop model. Import loads data, and Dual/Composite are hybrid modes."
             },
             // Question 2: Data Modeling (Relationships)
             {
                 id: 2,
                 topic: "Data Modeling",
                 level: "Basic",
-                question: "Que tipo de relação deve ser criada entre uma tabela de **factos** (Fact Table) e uma tabela de **dimensão** (Dimension Table) num modelo 'Star Schema' típico?",
+                question: "What type of relationship should be created between a **Fact Table** and a **Dimension Table** in a typical Star Schema model?",
                 options: [
-                    "Muitos para muitos (Many-to-Many)",
-                    "Um para um (One-to-One)",
-                    "Um para muitos (One-to-Many)",
-                    "Nenhuma relação é necessária"
+                    "Many-to-Many",
+                    "One-to-One",
+                    "One-to-Many",
+                    "No relationship is needed"
                 ],
                 correctAnswers: [2], // One-to-Many (Dimension -> Fact)
-                explanation: "A relação correta é **Um para Muitos (1:*)**, onde o lado 'Um' (1) está na tabela de dimensão (e.g., Clientes) e o lado 'Muitos' (*) na tabela de factos (e.g., Vendas)."
+                explanation: "The correct relationship is **One-to-Many (1:*)**, where the 'One' (1) side is on the dimension table (e.g., Customers) and the 'Many' (*) side is on the fact table (e.g., Sales)."
             },
             // Question 3: DAX (Time Intelligence) - Multi-select
             {
                 id: 3,
                 topic: "DAX",
                 level: "Advanced",
-                question: "Para calcular as **Vendas Acumuladas no Ano (Year-To-Date - YTD)**, quais das seguintes funções DAX podem ser utilizadas de forma eficaz? (Selecione **DUAS** respostas)",
+                question: "To calculate **Year-To-Date (YTD) Sales**, which of the following DAX functions can be used effectively? (Select **TWO** answers)",
                 options: [
                     "CALCULATE",
                     "SUMMARIZE",
@@ -429,14 +458,14 @@
                     "CALCULATETABLE"
                 ],
                 correctAnswers: [0, 2], // CALCULATE and TOTALYTD
-                explanation: "A função **TOTALYTD** (index 2) é uma função de inteligência de tempo simplificada. Alternativamente, a função **CALCULATE** (index 0) pode ser usada em conjunto com `DATESYTD` para conseguir o mesmo resultado, sendo fundamental para mudar o contexto de filtro."
+                explanation: "The **TOTALYTD** (index 2) function is a simplified time intelligence function. Alternatively, the **CALCULATE** (index 0) function can be used in conjunction with `DATESYTD` to achieve the same result, and is fundamental for changing the filter context."
             },
             // Question 4: Data Transformation (Power Query)
             {
                 id: 4,
                 topic: "Data Transformation",
                 level: "Intermediate",
-                question: "Qual das seguintes operações no Power Query é usada para transformar dados onde múltiplas colunas representam valores da mesma variável (formato 'wide') para um formato onde cada variável tem uma única coluna (formato 'tall' ou 'unpivoted')?",
+                question: "Which of the following operations in Power Query is used to transform data where multiple columns represent values of the same variable ('wide' format) into a format where each variable has a single column ('tall' or 'unpivoted' format)?",
                 options: [
                     "Merge Queries",
                     "Append Queries",
@@ -444,29 +473,29 @@
                     "Unpivot Columns"
                 ],
                 correctAnswers: [3], // Unpivot Columns
-                explanation: "**Unpivot Columns** (Desinverter Colunas) é a operação usada para passar de um formato 'wide' (largo) para um formato 'tall' (alto), que é o ideal para a modelação no Power BI (Princípios Tidy Data)."
+                explanation: "**Unpivot Columns** is the operation used to move from a 'wide' format to a 'tall' format, which is ideal for modeling in Power BI (Tidy Data Principles)."
             },
             // Question 5: Visualization
             {
                 id: 5,
                 topic: "Visualization and Analysis",
                 level: "Intermediate",
-                question: "Qual tipo de visualização é o mais apropriado para mostrar a **distribuição de dados e a identificação de outliers**?",
+                question: "Which type of visualization is most appropriate for showing the **data distribution and identifying outliers**?",
                 options: [
-                    "Line Chart (Gráfico de Linhas)",
-                    "Pie Chart (Gráfico Circular)",
-                    "Box and Whisker Plot (Diagrama de Extremos e Quartis)",
-                    "Stacked Bar Chart (Gráfico de Barras Empilhadas)"
+                    "Line Chart",
+                    "Pie Chart",
+                    "Box and Whisker Plot",
+                    "Stacked Bar Chart"
                 ],
                 correctAnswers: [2], // Box and Whisker Plot
-                explanation: "O **Box and Whisker Plot** (index 2) é ideal para visualizar a mediana, quartis, dispersão e, crucialmente, os **outliers** (pontos fora dos 'whiskers') de uma distribuição de dados."
+                explanation: "The **Box and Whisker Plot** (index 2) is ideal for visualizing the median, quartiles, spread, and, crucially, **outliers** (points outside the whiskers) of a data distribution."
             },
             // Question 6: Security and Deployment (RLS)
             {
                 id: 6,
                 topic: "Deployment and Maintenance",
                 level: "Advanced",
-                question: "Qual é o principal mecanismo usado para restringir o acesso aos dados dentro de um relatório do Power BI para utilizadores específicos, com base nas suas credenciais ou funções?",
+                question: "What is the primary mechanism used to restrict data access within a Power BI report for specific users based on their credentials or roles?",
                 options: [
                     "Row-Level Security (RLS)",
                     "Object-Level Security (OLS)",
@@ -474,14 +503,14 @@
                     "Defining a Workspace Security Group"
                 ],
                 correctAnswers: [0], // Row-Level Security (RLS)
-                explanation: "**Row-Level Security (RLS)** (Segurança ao Nível da Linha) é o método principal para filtrar as linhas de dados que um utilizador pode ver num relatório publicado, geralmente utilizando funções DAX."
+                explanation: "**Row-Level Security (RLS)** is the main method to filter the data rows a user can see in a published report, typically by using DAX roles."
             },
             // Question 7: Data Modeling (Cross-Filter Direction)
             {
                 id: 7,
                 topic: "Data Modeling",
                 level: "Advanced",
-                question: "Numa relação One-to-Many entre Tabela A (1) e Tabela B (*), a direção de filtro padrão é **Single**. Se pretender que os filtros aplicados à Tabela B filtrem a Tabela A, qual configuração deve ser alterada?",
+                question: "In a One-to-Many relationship between Table A (1) and Table B (*), the default filter direction is **Single**. If you want filters applied to Table B to filter Table A, which setting must be changed?",
                 options: [
                     "Cardinality: One-to-One",
                     "Cross-filter direction: Both",
@@ -489,14 +518,14 @@
                     "Relationship is Active"
                 ],
                 correctAnswers: [1], // Cross-filter direction: Both
-                explanation: "Mudar a **direção de filtro cruzado (Cross-filter direction)** para **Both** (Ambas) permite que os filtros fluam em ambas as direções da relação, possibilitando que a Tabela B filtre a Tabela A (apesar de esta prática dever ser usada com cautela)."
+                explanation: "Changing the **Cross-filter direction** to **Both** allows filters to flow in both directions of the relationship, enabling Table B to filter Table A (although this practice should be used with caution)."
             },
             // Question 8: DAX (Context Transition)
             {
                 id: 8,
                 topic: "DAX",
                 level: "Advanced",
-                question: "Em DAX, quando a função `CALCULATE` é usada dentro de uma Coluna Calculada, ocorre um fenómeno que converte o Contexto de Linha (Row Context) para Contexto de Filtro (Filter Context) no início da avaliação. Qual é o nome deste fenómeno?",
+                question: "In DAX, when the **CALCULATE** function is used within a Calculated Column, a phenomenon occurs that converts the Row Context to Filter Context at the start of evaluation. What is the name of this phenomenon?",
                 options: [
                     "Filter Propagation",
                     "Context Transition",
@@ -504,46 +533,369 @@
                     "Query Folding"
                 ],
                 correctAnswers: [1], // Context Transition
-                explanation: "Este é o conceito fundamental de **Context Transition** (Transição de Contexto), onde a `CALCULATE` converte implicitamente o contexto de linha para contexto de filtro, avaliando a expressão para o contexto de filtro criado por essa linha."
+                explanation: "This is the fundamental concept of **Context Transition**, where `CALCULATE` implicitly converts the row context into filter context, evaluating the expression for the filter context created by that row."
             },
             // Question 9: Data Preparation (Query Folding)
             {
                 id: 9,
                 topic: "Data Transformation",
                 level: "Intermediate",
-                question: "Qual o benefício principal de conseguir o **Query Folding** (Dobragem de Consulta) no Power Query, especialmente ao trabalhar com grandes fontes de dados relacionais?",
+                question: "What is the primary benefit of achieving **Query Folding** in Power Query, especially when working with large relational data sources?",
                 options: [
-                    "Permite a criação de visuais personalizados no relatório.",
-                    "Aumenta a portabilidade do modelo para a Cloud.",
-                    "Melhora o desempenho ao delegar o processamento de transformação à fonte de dados.",
-                    "É necessário para usar o modo DirectQuery."
+                    "It allows for the creation of custom visuals in the report.",
+                    "It increases the model's portability to the Cloud.",
+                    "It improves performance by delegating transformation processing to the data source.",
+                    "It is required for using the DirectQuery connectivity mode."
                 ],
                 correctAnswers: [2], // Improves performance by delegating processing
-                explanation: "**Query Folding** melhora o desempenho ao traduzir os passos M do Power Query para a linguagem da fonte de dados (e.g., SQL) e executá-los lá, reduzindo a quantidade de dados que precisam de ser transferidos e processados pelo Power BI."
+                explanation: "**Query Folding** improves performance by translating the Power Query M steps into the data source's native language (e.g., SQL) and executing them there, reducing the amount of data that needs to be transferred and processed by Power BI."
             },
             // Question 10: Deployment and Maintenance (Workspaces) - Multi-select
             {
                 id: 10,
                 topic: "Deployment and Maintenance",
                 level: "Intermediate",
-                question: "Quais das seguintes são **funcionalidades principais** dos Workspaces (Áreas de Trabalho) no serviço Power BI? (Selecione **DUAS** respostas)",
+                question: "Which of the following are **key functionalities** of Workspaces in the Power BI Service? (Select **TWO** answers)",
                 options: [
-                    "Servir como contentor para Dashboards, Relatórios e Datasets.",
-                    "Permitir o desenvolvimento de modelos em Power BI Desktop.",
-                    "Definir a segurança ao nível da linha (RLS).",
-                    "Colaboração e gestão de acesso para equipas."
+                    "Serving as a container for Dashboards, Reports, and Datasets.",
+                    "Allowing the development of models in Power BI Desktop.",
+                    "Defining Row-Level Security (RLS).",
+                    "Collaboration and access management for teams."
                 ],
                 correctAnswers: [0, 3], // Container and Collaboration/Access Management
-                explanation: "Workspaces são primariamente contentores no serviço (index 0) e o ponto central para **colaboração e gestão de acesso** (index 3). O desenvolvimento é feito no Desktop (fora do Workspace), e o RLS é definido no modelo (dataset)."
+                explanation: "Workspaces are primarily containers in the service (index 0) and the central point for **collaboration and access management** (index 3). Development is done in Desktop (outside the Workspace), and RLS is defined in the model (dataset)."
             },
+            
+            // --- ID 11 to ID 30 (Balanced Intermediate/Advanced Set) ---
+            
+            // Question 11: DAX (ALLSELECTED vs ALL)
+            {
+                id: 11,
+                topic: "DAX",
+                level: "Advanced",
+                question: "You need a measure that calculates the sales percentage contribution of a selected product to the total sales of **all products currently visible** in the slicer and filter context. Which DAX function is essential for the denominator?",
+                options: [
+                    "ALL('Sales')",
+                    "ALLSELECTED('Sales')",
+                    "ALLEXCEPT('Sales')",
+                    "SUMMARIZECOLUMNS"
+                ],
+                correctAnswers: [1], // ALLSELECTED
+                explanation: "**ALLSELECTED** removes filters from the current visual or row/column total, but keeps the filters applied externally by slicers or page/report filters. This allows the measure to calculate against the total visible subset."
+            },
+            
+            // Question 12: Data Modeling (Many-to-Many Bridge)
+            {
+                id: 12,
+                topic: "Data Modeling",
+                level: "Advanced",
+                question: "You have a **Many-to-Many** relationship between 'Students' and 'Courses'. What is the technically correct and standard data modeling solution required to make this relationship functional and bidirectional in Power BI?",
+                options: [
+                    "Activate bidirectional filtering on the Many-to-Many relationship.",
+                    "Define a **Bridge Table** (or Factless Fact Table) with One-to-Many relationships on both sides.",
+                    "Use the `RELATED` DAX function in a calculated column in both tables.",
+                    "Convert one of the tables into a Calculated Table using `SUMMARIZE`."
+                ],
+                correctAnswers: [1], // Bridge Table
+                explanation: "The standard practice to resolve a Many-to-Many relationship in a robust Star Schema is to use a **Bridge Table** (e.g., 'StudentCourse Enrollment') connected to both original tables via two One-to-Many relationships."
+            },
+            
+            // Question 13: Deployment (Deployment Pipelines)
+            {
+                id: 13,
+                topic: "Deployment and Maintenance",
+                level: "Advanced",
+                question: "Which feature in the Power BI Service is specifically designed to manage the lifecycle of content (Development, Test, Production) across different Workspaces?",
+                options: [
+                    "Gateways",
+                    "Incremental Refresh policies",
+                    "Deployment Pipelines",
+                    "Composite Models"
+                ],
+                correctAnswers: [2], // Deployment Pipelines
+                explanation: "**Deployment Pipelines** streamline the process of moving content (datasets, reports, dashboards) from a Development workspace to Test and then to a Production workspace, managing potential data source connection changes automatically."
+            },
+            
+            // Question 14: Data Transformation (M Language)
+            {
+                id: 14,
+                topic: "Data Preparation",
+                level: "Intermediate",
+                question: "When writing custom M code in Power Query, which function is typically used as the final step to return the desired table data from the entire query chain?",
+                options: [
+                    "let",
+                    "source",
+                    "in",
+                    "Table.Combine"
+                ],
+                correctAnswers: [2], // in
+                explanation: "The structure of an M query is always `let [steps] in [final_result]`. The **in** keyword defines the result of the entire expression, which is usually the name of the last transformation step."
+            },
+            
+            // Question 15: Security (Object-Level Security) - Multi-select
+            {
+                id: 15,
+                topic: "Deployment and Maintenance",
+                level: "Advanced",
+                question: "To fully hide specific columns or measures from a user, preventing them from even seeing the metadata (the column name) in the field list, which security mechanism is required? (Select **TWO** answers)",
+                options: [
+                    "Row-Level Security (RLS) via DAX roles.",
+                    "Object-Level Security (OLS) via Tabular Editor.",
+                    "Workspace access configuration.",
+                    "Setting the 'IsHidden' property in the data model."
+                ],
+                correctAnswers: [1, 3], // OLS and IsHidden
+                explanation: "While **setting 'IsHidden'** (index 3) hides objects from the field list, advanced users can still access the metadata. **Object-Level Security (OLS)** (index 1), configured via tools like Tabular Editor, is the only way to genuinely prevent users from seeing the metadata for sensitive objects."
+            },
+            
+            // Question 16: DAX (CALCULATE Filter Arguments)
+            {
+                id: 16,
+                topic: "DAX",
+                level: "Intermediate",
+                question: "You want to calculate sales for a specific product, 'Product A', but simultaneously retain all existing filters on the 'Region' dimension. How should you write the filter argument inside the `CALCULATE` function?",
+                options: [
+                    "`'Product'[Name] = \"Product A\", 'Region'[Name] = 'Region'[Name]`",
+                    "`'Product'[Name] = \"Product A\", ALL('Region')`",
+                    "`'Product'[Name] = \"Product A\", KEEPFILTERS('Region'[Name])`",
+                    "`'Product'[Name] = \"Product A\"`"
+                ],
+                correctAnswers: [3], // Only need the new filter
+                explanation: "DAX filters in `CALCULATE` are applied *in addition* to existing filters. Simply adding the new filter (`'Product'[Name] = \"Product A\"`) is sufficient, as the existing filter context on 'Region' is preserved by default."
+            },
+            
+            // Question 17: Performance (Data Modeling)
+            {
+                id: 17,
+                topic: "Data Modeling and Performance",
+                level: "Intermediate",
+                question: "Which data modeling practice is generally considered detrimental to the performance and maintainability of large Power BI models?",
+                options: [
+                    "Using a Star Schema design.",
+                    "Implementing an incremental refresh policy.",
+                    "Using bidirectional relationships (Both).",
+                    "Creating a Date table in Power Query."
+                ],
+                correctAnswers: [2], // Bidirectional relationships (Both)
+                explanation: "While occasionally necessary, extensive use of **bidirectional relationships** can lead to ambiguity, complex filter paths, and significant performance bottlenecks."
+            },
+            
+            // Question 18: Visualization (Small Multiples)
+            {
+                id: 18,
+                topic: "Visualization and Analysis",
+                level: "Intermediate",
+                question: "The 'Small Multiples' feature is best used for:",
+                options: [
+                    "Showing a single data point's contribution to a total.",
+                    "Displaying a simplified key performance indicator (KPI).",
+                    "Comparing the same chart across different categories (e.g., sales trend by region).",
+                    "Visualizing geographic distribution of data."
+                ],
+                correctAnswers: [2], // Comparing the same chart across different categories
+                explanation: "**Small Multiples** allow the user to see the same visual repeated for multiple members of a dimension, which is excellent for comparing trends or distributions across categories."
+            },
+            
+            // Question 19: Data Preparation (Query Folding Breakage)
+            {
+                id: 19,
+                topic: "Data Preparation",
+                level: "Advanced",
+                question: "Which of the following Power Query transformations is **most likely** to break Query Folding when applied to a large SQL Server data source?",
+                options: [
+                    "Filtering rows by a simple WHERE clause.",
+                    "Merging two tables with matching key columns.",
+                    "Adding a custom column that references `DateTime.LocalNow()`.",
+                    "Removing columns."
+                ],
+                correctAnswers: [2], // DateTime.LocalNow()
+                explanation: "Functions that are external to the source system and rely on the Power Query engine's context (like `DateTime.LocalNow()`) cannot be translated into SQL and will typically **break Query Folding** at that step."
+            },
+            
+            // Question 20: DAX (Measures vs Calculated Columns)
+            {
+                id: 20,
+                topic: "DAX",
+                level: "Intermediate",
+                question: "Which calculation type should you **always** use for aggregations that need to dynamically react to user filters (e.g., Sum of Sales displayed in a chart)?",
+                options: [
+                    "Calculated Column",
+                    "Measure",
+                    "Custom Column (Power Query)",
+                    "Data Grouping"
+                ],
+                correctAnswers: [1], // Measure
+                explanation: "A **Measure** is calculated at query time and dynamically reacts to the Filter Context established by the user's report interaction, whereas a Calculated Column is static."
+            },
+            
+            // Question 21: Security (Power BI Gateways)
+            {
+                id: 21,
+                topic: "Deployment and Maintenance",
+                level: "Intermediate",
+                question: "When setting up scheduled refresh for an on-premises data source (e.g., a local SQL Server), what credential setting is required for the Gateway connection?",
+                options: [
+                    "OAuth 2.0 credentials",
+                    "Windows or Basic Authentication credentials with permissions to the data source.",
+                    "Azure Active Directory credentials only.",
+                    "The credentials of the user viewing the report."
+                ],
+                correctAnswers: [1], // Windows or Basic Auth
+                explanation: "The Power BI Gateway must be configured with **credentials (Windows or Basic Auth)** that have the necessary permissions to connect to and extract data from the local data source during the scheduled refresh time."
+            },
+            
+            // Question 22: Data Modeling (Cardinality)
+            {
+                id: 22,
+                topic: "Data Modeling",
+                level: "Intermediate",
+                question: "You are modeling customer survey responses where a customer may submit multiple responses over time. If you incorrectly set the relationship cardinality to **One-to-One** between 'Customer' (1) and 'SurveyResponse' (*), what will be the immediate impact?",
+                options: [
+                    "The model will function normally, but performance will degrade.",
+                    "The relationship will not be established, resulting in cross-filter errors.",
+                    "The data will be incorrectly duplicated in the 'SurveyResponse' table.",
+                    "The model will force the 'SurveyResponse' table to use DirectQuery."
+                ],
+                correctAnswers: [1], // The relationship will not be established
+                explanation: "Power BI will detect that the 'Many' side of the data has duplicate values (i.e., the same customer ID appears multiple times in the fact table), violating the **One-to-One** rule, and will prevent the relationship from being established."
+            },
+            
+            // Question 23: DAX (Iterator Functions)
+            {
+                id: 23,
+                topic: "DAX",
+                level: "Advanced",
+                question: "Which category of DAX functions explicitly requires a **Row Context** (iterating row-by-row over a table) before they can evaluate an expression?",
+                options: [
+                    "Time Intelligence functions (e.g., TOTALYTD)",
+                    "Context Modification functions (e.g., CALCULATE)",
+                    "Iterator functions (e.g., SUMX, AVERAGEX)",
+                    "Table functions (e.g., FILTER)"
+                ],
+                correctAnswers: [2], // Iterator functions
+                explanation: "**Iterator functions** (ending in X, like SUMX and AVERAGEX) are specifically designed to iterate over rows of a specified table, creating a Row Context for each row to evaluate an expression."
+            },
+            
+            // Question 24: Data Preparation (Incremental Refresh)
+            {
+                id: 24,
+                topic: "Deployment and Maintenance",
+                level: "Advanced",
+                question: "When configuring Incremental Refresh for a large dataset, which of the following is an absolute **requirement** for the source table?",
+                options: [
+                    "The table must be stored in Azure Blob Storage.",
+                    "The Power BI Desktop file must be less than 1GB.",
+                    "The table must contain a date/datetime column used to define the refresh range.",
+                    "The dataset must be connected using the Import connectivity mode."
+                ],
+                correctAnswers: [2], // Date/datetime column
+                explanation: "Incremental Refresh requires a date/datetime column in the source table. Two M parameters, **RangeStart** and **RangeEnd**, are used to dynamically filter this column for partial refreshes."
+            },
+            
+            // Question 25: Visualization (Slicer Syncing)
+            {
+                id: 25,
+                topic: "Visualization and Analysis",
+                level: "Intermediate",
+                question: "You have two report pages, 'Overview' and 'Detail'. You want a slicer placed on the 'Overview' page to also filter the visuals on the 'Detail' page. Which Power BI Desktop setting must you use?",
+                options: [
+                    "Set the visual interaction to 'Filter'.",
+                    "Use the 'Sync slicers' panel.",
+                    "Set the filter direction to 'Both'.",
+                    "Define a custom DAX measure for cross-page filtering."
+                ],
+                correctAnswers: [1], // Sync slicers panel
+                explanation: "The **Sync slicers** panel in Power BI Desktop is the dedicated tool for controlling how a single slicer affects visuals across multiple report pages simultaneously."
+            },
+            
+            // Question 26: Data Modeling (Factless Fact Table)
+            {
+                id: 26,
+                topic: "Data Modeling",
+                level: "Advanced",
+                question: "A **Factless Fact Table** is primarily used to track:",
+                options: [
+                    "The average value of a numeric metric.",
+                    "Events or coverage, not involving numeric measures (e.g., attendance or eligibility).",
+                    "The hierarchy of a dimension table.",
+                    "Calculations that are slow to execute."
+                ],
+                correctAnswers: [1], // Events or coverage
+                explanation: "A Factless Fact Table records events or coverage (like promotions run or students enrolled in courses) where there are no inherent measures (sales amount, quantity, etc.) to aggregate."
+            },
+            
+            // Question 27: DAX (Filter Context Override)
+            {
+                id: 27,
+                topic: "DAX",
+                level: "Advanced",
+                question: "You use `CALCULATE(SUM('Sales'[Amount]), 'Product'[Color] = \"Red\")`. If the visual already has a filter context for 'Product'[Color] = \"Blue\", what is the result?",
+                options: [
+                    "Sales for blue products.",
+                    "Sales for red products.",
+                    "Sales for products that are both red and blue.",
+                    "An error, as the contexts conflict."
+                ],
+                correctAnswers: [1], // Sales for red products
+                explanation: "Filters provided as arguments to `CALCULATE` **override** existing filters on the same column. The 'Blue' filter context is overwritten by the 'Red' filter argument, isolating the calculation to red products."
+            },
+            
+            // Question 28: Performance (Aggregations)
+            {
+                id: 28,
+                topic: "Performance Tuning",
+                level: "Advanced",
+                question: "What is the key benefit of implementing **Aggregations** in a large Power BI model?",
+                options: [
+                    "It ensures 100% Query Folding for DirectQuery sources.",
+                    "It allows reports to access summarized data without querying the detailed fact tables.",
+                    "It automatically creates a Date table for time intelligence.",
+                    "It restricts user access based on row security."
+                ],
+                correctAnswers: [1], // Access summarized data
+                explanation: "**Aggregations** involve pre-calculated summary tables. Power BI redirects the query to the smaller, faster aggregate table if it can answer the question, greatly improving performance."
+            },
+            
+            // Question 29: Data Preparation (Custom Data Types)
+            {
+                id: 29,
+                topic: "Data Preparation",
+                level: "Intermediate",
+                question: "You want to import data from a Web API and organize the resulting JSON structure into clean tables. Which Power Query feature is primarily used for navigating and extracting data from complex, hierarchical columns?",
+                options: [
+                    "Unpivot Columns",
+                    "Drill Down",
+                    "Expand Column",
+                    "Group By"
+                ],
+                correctAnswers: [2], // Expand Column
+                explanation: "The **Expand Column** feature is used on structured columns (like 'Record' or 'List' columns resulting from JSON/Web connectors) to unpack the nested values into new, flat columns."
+            },
+            
+            // Question 30: Visualization (Report Tooltips)
+            {
+                id: 30,
+                topic: "Visualization and Analysis",
+                level: "Intermediate",
+                question: "How do you create a **Report Tooltip** page that displays detailed metrics when a user hovers over a data point in a visual?",
+                options: [
+                    "Use the 'Focus Mode' option on the visual.",
+                    "Set the page size to 'Tooltip' and link it in the Visual Formatting pane.",
+                    "Write a DAX measure that returns HTML code for the tooltip.",
+                    "Create a bookmark that focuses on the tooltip."
+                ],
+                correctAnswers: [1], // Set page size and link in formatting
+                explanation: "To create a Report Tooltip, you must set the page type to **Tooltip** in the Page Information settings, and then go to the visual's **Format pane** to select that page as the Tooltip page source."
+            }
         ];
-
-        // --- GLOBAL STATE ---
-        let currentQuestionIndex = 0;
-        let userAnswers = []; // Store selected options for each question
-        let isFlagged = new Array(quizQuestions.length).fill(false);
-        let timerSeconds = 60 * 60; // 60 minutes
-        let timerInterval;
+        
+        // Array containing the raw text for the list items on the start screen
+        const startInfoRaw = [
+            '**30 multiple-choice questions**',
+            'Practice Mode (no time limit)',
+            'Questions may have **one or multiple** correct answers.',
+            'Minimum passing score: **70%**'
+        ];
 
         // --- DOM Elements ---
         const startScreen = document.getElementById('start-screen');
@@ -553,16 +905,39 @@
         const progressContainer = document.getElementById('progress-container');
         const quizFooter = document.getElementById('quiz-footer');
         
+        const startInfoList = document.getElementById('start-info-list');
+        const questionCounter = document.getElementById('question-counter');
         const questionText = document.getElementById('question-text');
         const optionsList = document.getElementById('options-list');
         const feedbackMessage = document.getElementById('feedback-message');
         const progressBar = document.getElementById('progress-bar');
-        const timerDisplay = document.getElementById('timer-display');
         const pagerContainer = document.getElementById('pager-container');
         const nextBtn = document.getElementById('next-btn');
         const prevBtn = document.getElementById('prev-btn');
         const finishBtn = document.getElementById('finish-btn');
         const flagIcon = document.getElementById('flag-icon');
+
+        // NEW ELEMENT IDs
+        const reviewContainer = document.getElementById('review-container');
+        const reviewToggleButton = document.getElementById('review-toggle-btn');
+        const reviewList = document.getElementById('review-list');
+
+
+        // --- INITIAL RENDER FIX ---
+        // Function to render the start screen info list with HTML formatting
+        function renderStartInfo() {
+            startInfoList.innerHTML = '';
+            startInfoRaw.forEach(itemText => {
+                const item = document.createElement('li');
+                // Use markdownToHtmlBold for the list item content
+                item.innerHTML = '<i class="fas fa-check-circle"></i> ' + markdownToHtmlBold(itemText);
+                startInfoList.appendChild(item);
+            });
+        }
+        
+        // Execute immediately when the page loads
+        renderStartInfo();
+
 
         // --- EVENT LISTENERS ---
         document.getElementById('start-btn').addEventListener('click', startExam);
@@ -570,9 +945,25 @@
         prevBtn.addEventListener('click', () => navigateQuestion(-1));
         finishBtn.addEventListener('click', showFinalResults);
         flagIcon.addEventListener('click', toggleFlag);
+        
+        // NEW EVENT LISTENER for the review button
+        reviewToggleButton.addEventListener('click', toggleReviewVisibility);
 
 
         // --- MAIN FUNCTIONS ---
+        
+        function toggleReviewVisibility() {
+            if (reviewContainer.style.display === 'none' || reviewContainer.style.display === '') {
+                reviewContainer.style.display = 'block';
+                reviewToggleButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer Review';
+            } else {
+                reviewContainer.style.display = 'none';
+                reviewToggleButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer Review';
+                // Scroll back up to the score summary after hiding
+                finalResultsScreen.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
 
         function startExam() {
             startScreen.style.display = 'none';
@@ -581,32 +972,15 @@
             progressContainer.style.display = 'block';
             quizFooter.style.display = 'flex';
             
-            // Initialize user answers array
+            // Reset state for a new test
             userAnswers = quizQuestions.map(() => []);
-
+            isFlagged = new Array(quizQuestions.length).fill(false);
+            
             // Setup pager
             createPager();
 
             // Load first question
             loadQuestion(0);
-
-            // Start timer
-            startTimer();
-        }
-
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timerSeconds--;
-                if (timerSeconds < 0) {
-                    clearInterval(timerInterval);
-                    timerDisplay.innerHTML = `<i class="fas fa-clock"></i> 00:00`;
-                    showFinalResults();
-                    return;
-                }
-                const minutes = Math.floor(timerSeconds / 60);
-                const seconds = timerSeconds % 60;
-                timerDisplay.innerHTML = `<i class="fas fa-clock"></i> ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            }, 1000);
         }
 
         function loadQuestion(index) {
@@ -614,17 +988,15 @@
             const q = quizQuestions[index];
 
             // 1. Update Header & Progress
-            document.getElementById('exam-title').textContent = `Exame PL-300 | Questão ${index + 1} de ${quizQuestions.length}`;
+            questionCounter.textContent = `Question ${index + 1} of ${quizQuestions.length}`;
             progressBar.style.width = `${((index + 1) / quizQuestions.length) * 100}%`;
             
             // 2. Update Question Content
-            const isMultiSelect = q.correctAnswers.length > 1;
-            const selectionText = isMultiSelect ? '(Selecione **todas** as corretas)' : '(Selecione **uma** correta)';
-            
-            questionText.innerHTML = `${q.question} <span style="font-size:0.7em; color:#888;">${selectionText}</span>`;
+            questionText.innerHTML = markdownToHtmlBold(q.question);
             
             // 3. Render Options
             optionsList.innerHTML = '';
+            const isMultiSelect = q.correctAnswers.length > 1;
             const inputType = isMultiSelect ? 'checkbox' : 'radio';
             
             q.options.forEach((option, i) => {
@@ -654,7 +1026,7 @@
             updateFlagIcon(index);
 
             // 7. Clear Feedback
-            feedbackMessage.style.display = 'none'; // Feedback is only shown after exam finish/review
+            feedbackMessage.style.display = 'none'; 
         }
 
         function createPager() {
@@ -727,24 +1099,27 @@
         function updateFlagIcon(index) {
             if (isFlagged[index]) {
                 flagIcon.style.color = '#ffc107'; // Yellow when flagged
+                flagIcon.title = "Unflag for Review";
             } else {
                 flagIcon.style.color = '#6c757d'; // Gray/Default when not flagged
+                flagIcon.title = "Flag for Review";
             }
         }
 
 
         function showFinalResults() {
-            clearInterval(timerInterval);
-
             quizScreen.style.display = 'none';
             quizHeader.style.display = 'none';
             progressContainer.style.display = 'none';
             quizFooter.style.display = 'none';
             finalResultsScreen.style.display = 'block';
 
+            // Reset review display state for the new test run
+            reviewContainer.style.display = 'none';
+            reviewToggleButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer Review';
+            
             let correctCount = 0;
             const totalQuestions = quizQuestions.length;
-            const reviewList = document.getElementById('review-list');
             reviewList.innerHTML = '';
 
             // 1. Calculate Score
@@ -770,20 +1145,20 @@
                     : '<i class="fas fa-times-circle review-status-icon incorrect"></i>';
 
                 const userAnswerText = userSelection.length > 0 
-                    ? userSelection.map(idx => `**${q.options[idx]}**`).join(' | ')
-                    : '*Não Respondida*';
+                    ? userSelection.map(idx => `<strong>${q.options[idx]}</strong>`).join(' | ')
+                    : '<em>Not Answered</em>';
                 
-                const correctAnswerText = correctSelection.map(idx => `**${q.options[idx]}**`).join(' | ');
+                const correctAnswerText = correctSelection.map(idx => `<strong>${q.options[idx]}</strong>`).join(' | ');
 
                 reviewItem.innerHTML = `
                     ${statusIconHtml}
-                    <div class="review-q-text">Questão ${i + 1}: ${q.question}</div>
+                    <div class="review-q-text">Question ${i + 1}: ${markdownToHtmlBold(q.question)}</div>
                     <p>
-                        **Sua Resposta:** ${userAnswerText}
-                        ${!isCorrect ? '<br>**Resposta Correta:** ' + correctAnswerText : ''}
+                        <strong>Your Answer:</strong> ${userAnswerText}
+                        ${!isCorrect ? '<br><strong>Correct Answer:</strong> ' + correctAnswerText : ''}
                     </p>
                     <div class="review-explanation">
-                        **Explicação:** ${q.explanation}
+                        <strong>Explanation:</strong> ${markdownToHtmlBold(q.explanation)}
                     </div>
                 `;
                 reviewList.appendChild(reviewItem);
@@ -793,10 +1168,10 @@
             const finalScorePercentage = Math.round((correctCount / totalQuestions) * 100);
             const isApproved = finalScorePercentage >= 70;
 
-            document.getElementById('pass-fail-status').textContent = isApproved ? 'Aprovado' : 'Não Aprovado';
+            document.getElementById('pass-fail-status').textContent = isApproved ? 'Passed' : 'Not Passed';
             document.getElementById('pass-fail-status').style.color = isApproved ? '#107c10' : '#dc3545';
             
-            document.getElementById('final-score-text').textContent = `Pontuação Final: ${finalScorePercentage}%`;
+            document.getElementById('final-score-text').textContent = `Final Score: ${finalScorePercentage}%`;
             document.getElementById('correct-count').textContent = correctCount;
             document.getElementById('incorrect-count').textContent = totalQuestions - correctCount;
             document.getElementById('total-count').textContent = totalQuestions;
