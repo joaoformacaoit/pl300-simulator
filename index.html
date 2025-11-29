@@ -453,9 +453,9 @@
                 question: "To calculate **Year-To-Date (YTD) Sales**, which of the following DAX functions can be used effectively? (Select **TWO** answers)",
                 options: [
                     "CALCULATE",
-                    "SUMMARIZE",
+                    "CALCULATEYTD",
                     "TOTALYTD",
-                    "CALCULATETABLE"
+                    "SUMYTD"
                 ],
                 correctAnswers: [0, 2], // CALCULATE and TOTALYTD
                 explanation: "The **TOTALYTD** (index 2) function is a simplified time intelligence function. Alternatively, the **CALCULATE** (index 0) function can be used in conjunction with `DATESYTD` to achieve the same result, and is fundamental for changing the filter context."
@@ -525,15 +525,15 @@
                 id: 8,
                 topic: "DAX",
                 level: "Advanced",
-                question: "In DAX, when the **CALCULATE** function is used within a Calculated Column, a phenomenon occurs that converts the Row Context to Filter Context at the start of evaluation. What is the name of this phenomenon?",
+                question: "In what context does the formula of a calculated column works?",
                 options: [
-                    "Filter Propagation",
-                    "Context Transition",
-                    "Relationship Activation",
-                    "Query Folding"
+                    "Table Context",
+                    "Row Context",
+                    "Filter Context",
+                    "Model Context"
                 ],
-                correctAnswers: [1], // Context Transition
-                explanation: "This is the fundamental concept of **Context Transition**, where `CALCULATE` implicitly converts the row context into filter context, evaluating the expression for the filter context created by that row."
+                correctAnswers: [1], // Row Context
+                explanation: "When the formula for a calculated column is submitted a Row Context is defined that allows for each row to be evaluated individually."
             },
             // Question 9: Data Preparation (Query Folding)
             {
@@ -565,9 +565,7 @@
                 correctAnswers: [0, 3], // Container and Collaboration/Access Management
                 explanation: "Workspaces are primarily containers in the service (index 0) and the central point for **collaboration and access management** (index 3). Development is done in Desktop (outside the Workspace), and RLS is defined in the model (dataset)."
             },
-            
-            // --- ID 11 to ID 30 (Balanced Intermediate/Advanced Set) ---
-            
+                      
             // Question 11: DAX (ALLSELECTED vs ALL)
             {
                 id: 11,
@@ -578,7 +576,7 @@
                     "ALL('Sales')",
                     "ALLSELECTED('Sales')",
                     "ALLEXCEPT('Sales')",
-                    "SUMMARIZECOLUMNS"
+                    "REMOVEALLFILTERS"
                 ],
                 correctAnswers: [1], // ALLSELECTED
                 explanation: "**ALLSELECTED** removes filters from the current visual or row/column total, but keeps the filters applied externally by slicers or page/report filters. This allows the measure to calculate against the total visible subset."
@@ -639,13 +637,13 @@
                 level: "Advanced",
                 question: "To fully hide specific columns or measures from a user, preventing them from even seeing the metadata (the column name) in the field list, which security mechanism is required? (Select **TWO** answers)",
                 options: [
-                    "Row-Level Security (RLS) via DAX roles.",
-                    "Object-Level Security (OLS) via Tabular Editor.",
+                    "Row-Level Security (RLS)",
+                    "Object-Level Security (OLS)",
                     "Workspace access configuration.",
                     "Setting the 'IsHidden' property in the data model."
                 ],
                 correctAnswers: [1, 3], // OLS and IsHidden
-                explanation: "While **setting 'IsHidden'** (index 3) hides objects from the field list, advanced users can still access the metadata. **Object-Level Security (OLS)** (index 1), configured via tools like Tabular Editor, is the only way to genuinely prevent users from seeing the metadata for sensitive objects."
+                explanation: "While **setting 'IsHidden'** (index 3) hides objects from the field list, advanced users can still access the metadata. **Object-Level Security (OLS)** (index 1), is the only way to genuinely prevent users from seeing the metadata for sensitive objects."
             },
             
             // Question 16: DAX (CALCULATE Filter Arguments)
