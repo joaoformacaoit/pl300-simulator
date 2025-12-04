@@ -70,8 +70,7 @@
             margin-bottom: 25px; 
             line-height: 1.4;
         }
-        /* Removed .instruction CSS as element is no longer needed */
-
+        
         /* --- Options List --- */
         .options-list {
             list-style: none;
@@ -189,7 +188,7 @@
         .feedback.incorrect {
             background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border: 1px solid #f5c6fb;
         }
         .explanation {
             margin-top: 10px;
@@ -264,7 +263,7 @@
         .score-box {
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             width: 150px;
         }
         .score-box h3 {
@@ -363,11 +362,11 @@
                 <p id="final-score-text">Final Score: 10%</p>
                 <div class="score-summary">
                     <div class="score-box correct">
-                        <h3 id="correct-count">1</h3>
+                        <h3 id="correct-count">0</h3>
                         <p>Correct</p>
                     </div>
                     <div class="score-box incorrect">
-                        <h3 id="incorrect-count">29</h3>
+                        <h3 id="incorrect-count">30</h3>
                         <p>Incorrect</p>
                     </div>
                     <div class="score-box total">
@@ -414,482 +413,468 @@
             return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         }
 
+        // FIX 1: Extract the scenario description to a stable constant
+        const YN_SCENARIO_DESCRIPTION = "You need to minimize the size and memory usage of a large data model.";
+
         const quizQuestions = [
-            // Question 1: Data Preparation (Import/DirectQuery)
+            // --- 5 EASY QUESTIONS (ID 1-5) ---
             {
                 id: 1,
-                topic: "Data Preparation",
-                level: "Intermediate",
-                question: "Which connectivity mode does **not** load data into the Power BI Desktop model, maintaining the data source as the single source of truth?",
+                topic: "Visualization",
+                level: "Easy",
+                question: "Which type of visualization should you use to clearly display the **contribution of each part to a whole** (e.g., product categories by total sales)?",
                 options: [
-                    "Import",
-                    "DirectQuery",
-                    "Dual",
-                    "Composite"
+                    "Line Chart",
+                    "Scatter Plot",
+                    "100% Stacked Column Chart",
+                    "Table"
                 ],
-                correctAnswers: [1], // DirectQuery
-                explanation: "<strong>DirectQuery</strong> is the mode that queries the data source (such as SQL Server) in real-time, without loading the data into the Power BI Desktop model. Import loads data, and Dual/Composite are hybrid modes."
+                correctAnswers: [2],
+                explanation: "The **100% Stacked Column Chart** (or Stacked Bar Chart) is the standard visual for showing the proportional contribution of segments within categories."
             },
-            // Question 2: Data Modeling (Relationships)
             {
                 id: 2,
+                topic: "Data Preparation",
+                level: "Easy",
+                question: "Which editor is used within Power BI Desktop to perform Extract, Transform, and Load (ETL) operations?",
+                options: [
+                    "DAX Studio",
+                    "Power Query Editor",
+                    "M Code Editor",
+                    "Report View"
+                ],
+                correctAnswers: [1],
+                explanation: "The **Power Query Editor** is the dedicated tool within Power BI for connecting to data sources and performing data transformation steps."
+            },
+            {
+                id: 3,
                 topic: "Data Modeling",
-                level: "Basic",
-                question: "What type of relationship should be created between a **Fact Table** and a **Dimension Table** in a typical Star Schema model?",
+                level: "Easy",
+                question: "In the relationship view, what is the most common cardinality (type) between a single customer in a Dimension table and their transactions in a Fact table?",
                 options: [
                     "Many-to-Many",
                     "One-to-One",
                     "One-to-Many",
-                    "No relationship is needed"
+                    "Many-to-One"
                 ],
-                correctAnswers: [2], // One-to-Many (Dimension -> Fact)
-                explanation: "The correct relationship is **One-to-Many (1:*)**, where the 'One' (1) side is on the dimension table (e.g., Customers) and the 'Many' (*) side is on the fact table (e.g., Sales)."
+                correctAnswers: [2],
+                explanation: "The standard cardinality is **One-to-Many (1:*)**, where the Dimension table is the 'One' side and the Fact table is the 'Many' side."
             },
-            // Question 3: DAX (Time Intelligence) - Multi-select
-            {
-                id: 3,
-                topic: "DAX",
-                level: "Advanced",
-                question: "To calculate **Year-To-Date (YTD) Sales**, which of the following DAX functions can be used effectively? (Select **TWO** answers)",
-                options: [
-                    "CALCULATE",
-                    "CALCULATEYTD",
-                    "TOTALYTD",
-                    "SUMYTD"
-                ],
-                correctAnswers: [0, 2], // CALCULATE and TOTALYTD
-                explanation: "The **TOTALYTD** (index 2) function is a simplified time intelligence function. Alternatively, the **CALCULATE** (index 0) function can be used in conjunction with `DATESYTD` to achieve the same result, and is fundamental for changing the filter context."
-            },
-            // Question 4: Data Transformation (Power Query)
             {
                 id: 4,
-                topic: "Data Transformation",
-                level: "Intermediate",
-                question: "Which of the following operations in Power Query is used to transform data where multiple columns represent values of the same variable ('wide' format) into a format where each variable has a single column ('tall' or 'unpivoted' format)?",
-                options: [
-                    "Merge Queries",
-                    "Append Queries",
-                    "Group By",
-                    "Unpivot Columns"
-                ],
-                correctAnswers: [3], // Unpivot Columns
-                explanation: "**Unpivot Columns** is the operation used to move from a 'wide' format to a 'tall' format, which is ideal for modeling in Power BI (Tidy Data Principles)."
-            },
-            // Question 5: Visualization
-            {
-                id: 5,
-                topic: "Visualization and Analysis",
-                level: "Intermediate",
-                question: "Which type of visualization is most appropriate for showing the **data distribution and identifying outliers**?",
-                options: [
-                    "Line Chart",
-                    "Pie Chart",
-                    "Box and Whisker Plot",
-                    "Stacked Bar Chart"
-                ],
-                correctAnswers: [2], // Box and Whisker Plot
-                explanation: "The **Box and Whisker Plot** (index 2) is ideal for visualizing the median, quartiles, spread, and, crucially, **outliers** (points outside the whiskers) of a data distribution."
-            },
-            // Question 6: Security and Deployment (RLS)
-            {
-                id: 6,
-                topic: "Deployment and Maintenance",
-                level: "Advanced",
-                question: "What is the primary mechanism used to restrict data access within a Power BI report for specific users based on their credentials or roles?",
-                options: [
-                    "Row-Level Security (RLS)",
-                    "Object-Level Security (OLS)",
-                    "Setting permissions on the Gateway",
-                    "Defining a Workspace Security Group"
-                ],
-                correctAnswers: [0], // Row-Level Security (RLS)
-                explanation: "**Row-Level Security (RLS)** is the main method to filter the data rows a user can see in a published report, typically by using DAX roles."
-            },
-            // Question 7: Data Modeling (Cross-Filter Direction)
-            {
-                id: 7,
-                topic: "Data Modeling",
-                level: "Advanced",
-                question: "In a One-to-Many relationship between Table A (1) and Table B (*), the default filter direction is **Single**. If you want filters applied to Table B to filter Table A, which setting must be changed?",
-                options: [
-                    "Cardinality: One-to-One",
-                    "Cross-filter direction: Both",
-                    "Data load: DirectQuery",
-                    "Relationship is Active"
-                ],
-                correctAnswers: [1], // Cross-filter direction: Both
-                explanation: "Changing the **Cross-filter direction** to **Both** allows filters to flow in both directions of the relationship, enabling Table B to filter Table A (although this practice should be used with caution)."
-            },
-            // Question 8: DAX (Context Transition)
-            {
-                id: 8,
                 topic: "DAX",
-                level: "Advanced",
-                question: "In what context does the formula of a calculated column works?",
-                options: [
-                    "Table Context",
-                    "Row Context",
-                    "Filter Context",
-                    "Model Context"
-                ],
-                correctAnswers: [1], // Row Context
-                explanation: "When the formula for a calculated column is submitted a Row Context is defined that allows for each row to be evaluated individually."
-            },
-            // Question 9: Data Preparation (Query Folding)
-            {
-                id: 9,
-                topic: "Data Transformation",
-                level: "Intermediate",
-                question: "What is the primary benefit of achieving **Query Folding** in Power Query, especially when working with large relational data sources?",
-                options: [
-                    "It allows for the creation of custom visuals in the report.",
-                    "It increases the model's portability to the Cloud.",
-                    "It improves performance by delegating transformation processing to the data source.",
-                    "It is required for using the DirectQuery connectivity mode."
-                ],
-                correctAnswers: [2], // Improves performance by delegating processing
-                explanation: "**Query Folding** improves performance by translating the Power Query M steps into the data source's native language (e.g., SQL) and executing them there, reducing the amount of data that needs to be transferred and processed by Power BI."
-            },
-            // Question 10: Deployment and Maintenance (Workspaces) - Multi-select
-            {
-                id: 10,
-                topic: "Deployment and Maintenance",
-                level: "Intermediate",
-                question: "Which of the following are **key functionalities** of Workspaces in the Power BI Service? (Select **TWO** answers)",
-                options: [
-                    "Serving as a container for Dashboards, Reports, and Datasets.",
-                    "Allowing the development of models in Power BI Desktop.",
-                    "Defining Row-Level Security (RLS).",
-                    "Collaboration and access management for teams."
-                ],
-                correctAnswers: [0, 3], // Container and Collaboration/Access Management
-                explanation: "Workspaces are primarily containers in the service (index 0) and the central point for **collaboration and access management** (index 3). Development is done in Desktop (outside the Workspace), and RLS is defined in the model (dataset)."
-            },
-                      
-            // Question 11: DAX (ALLSELECTED vs ALL)
-            {
-                id: 11,
-                topic: "DAX",
-                level: "Advanced",
-                question: "You need a measure that calculates the sales percentage contribution of a selected product to the total sales of **all products currently visible** in the slicer and filter context. Which DAX function is essential for the denominator?",
-                options: [
-                    "ALL('Sales')",
-                    "ALLSELECTED('Sales')",
-                    "ALLEXCEPT('Sales')",
-                    "REMOVEALLFILTERS"
-                ],
-                correctAnswers: [1], // ALLSELECTED
-                explanation: "**ALLSELECTED** removes filters from the current visual or row/column total, but keeps the filters applied externally by slicers or page/report filters. This allows the measure to calculate against the total visible subset."
-            },
-            
-            // Question 12: Data Modeling (Many-to-Many Bridge)
-            {
-                id: 12,
-                topic: "Data Modeling",
-                level: "Advanced",
-                question: "You have a **Many-to-Many** relationship between 'Students' and 'Courses'. What is the technically correct and standard data modeling solution required to make this relationship functional and bidirectional in Power BI?",
-                options: [
-                    "Activate bidirectional filtering on the Many-to-Many relationship.",
-                    "Define a **Bridge Table** (or Factless Fact Table) with One-to-Many relationships on both sides.",
-                    "Use the `RELATED` DAX function in a calculated column in both tables.",
-                    "Convert one of the tables into a Calculated Table using `SUMMARIZE`."
-                ],
-                correctAnswers: [1], // Bridge Table
-                explanation: "The standard practice to resolve a Many-to-Many relationship in a robust Star Schema is to use a **Bridge Table** (e.g., 'StudentCourse Enrollment') connected to both original tables via two One-to-Many relationships."
-            },
-            
-            // Question 13: Deployment (Deployment Pipelines)
-            {
-                id: 13,
-                topic: "Deployment and Maintenance",
-                level: "Advanced",
-                question: "Which feature in the Power BI Service is specifically designed to manage the lifecycle of content (Development, Test, Production) across different Workspaces?",
-                options: [
-                    "Gateways",
-                    "Incremental Refresh policies",
-                    "Deployment Pipelines",
-                    "Composite Models"
-                ],
-                correctAnswers: [2], // Deployment Pipelines
-                explanation: "**Deployment Pipelines** streamline the process of moving content (datasets, reports, dashboards) from a Development workspace to Test and then to a Production workspace, managing potential data source connection changes automatically."
-            },
-            
-            // Question 14: Data Transformation (M Language)
-            {
-                id: 14,
-                topic: "Data Preparation",
-                level: "Intermediate",
-                question: "When writing custom M code in Power Query, which function is typically used as the final step to return the desired table data from the entire query chain?",
-                options: [
-                    "let",
-                    "source",
-                    "in",
-                    "Table.Combine"
-                ],
-                correctAnswers: [2], // in
-                explanation: "The structure of an M query is always `let [steps] in [final_result]`. The **in** keyword defines the result of the entire expression, which is usually the name of the last transformation step."
-            },
-            
-            // Question 15: Security (Object-Level Security) - Multi-select
-            {
-                id: 15,
-                topic: "Deployment and Maintenance",
-                level: "Advanced",
-                question: "To fully hide specific columns or measures from a user, preventing them from even seeing the metadata (the column name) in the field list, which security mechanism is required? (Select **TWO** answers)",
-                options: [
-                    "Row-Level Security (RLS)",
-                    "Object-Level Security (OLS)",
-                    "Workspace access configuration.",
-                    "Setting the 'IsHidden' property in the data model."
-                ],
-                correctAnswers: [1, 3], // OLS and IsHidden
-                explanation: "While **setting 'IsHidden'** (index 3) hides objects from the field list, advanced users can still access the metadata. **Object-Level Security (OLS)** (index 1), is the only way to genuinely prevent users from seeing the metadata for sensitive objects."
-            },
-            
-            // Question 16: DAX (CALCULATE Filter Arguments)
-            {
-                id: 16,
-                topic: "DAX",
-                level: "Intermediate",
-                question: "You want to calculate sales for a specific product, 'Product A', but simultaneously retain all existing filters on the 'Region' dimension. How should you write the filter argument inside the `CALCULATE` function?",
-                options: [
-                    "`'Product'[Name] = \"Product A\", 'Region'[Name] = 'Region'[Name]`",
-                    "`'Product'[Name] = \"Product A\", ALL('Region')`",
-                    "`'Product'[Name] = \"Product A\", KEEPFILTERS('Region'[Name])`",
-                    "`'Product'[Name] = \"Product A\"`"
-                ],
-                correctAnswers: [3], // Only need the new filter
-                explanation: "DAX filters in `CALCULATE` are applied *in addition* to existing filters. Simply adding the new filter (`'Product'[Name] = \"Product A\"`) is sufficient, as the existing filter context on 'Region' is preserved by default."
-            },
-            
-            // Question 17: Performance (Data Modeling)
-            {
-                id: 17,
-                topic: "Data Modeling and Performance",
-                level: "Intermediate",
-                question: "Which data modeling practice is generally considered detrimental to the performance and maintainability of large Power BI models?",
-                options: [
-                    "Using a Star Schema design.",
-                    "Implementing an incremental refresh policy.",
-                    "Using bidirectional relationships (Both).",
-                    "Creating a Date table in Power Query."
-                ],
-                correctAnswers: [2], // Bidirectional relationships (Both)
-                explanation: "While occasionally necessary, extensive use of **bidirectional relationships** can lead to ambiguity, complex filter paths, and significant performance bottlenecks."
-            },
-            
-            // Question 18: Visualization (Small Multiples)
-            {
-                id: 18,
-                topic: "Visualization and Analysis",
-                level: "Intermediate",
-                question: "The 'Small Multiples' feature is best used for:",
-                options: [
-                    "Showing a single data point's contribution to a total.",
-                    "Displaying a simplified key performance indicator (KPI).",
-                    "Comparing the same chart across different categories (e.g., sales trend by region).",
-                    "Visualizing geographic distribution of data."
-                ],
-                correctAnswers: [2], // Comparing the same chart across different categories
-                explanation: "**Small Multiples** allow the user to see the same visual repeated for multiple members of a dimension, which is excellent for comparing trends or distributions across categories."
-            },
-            
-            // Question 19: Data Preparation (Query Folding Breakage)
-            {
-                id: 19,
-                topic: "Data Preparation",
-                level: "Advanced",
-                question: "Which of the following Power Query transformations is **most likely** to break Query Folding when applied to a large SQL Server data source?",
-                options: [
-                    "Filtering rows by a simple WHERE clause.",
-                    "Merging two tables with matching key columns.",
-                    "Adding a custom column that references `DateTime.LocalNow()`.",
-                    "Removing columns."
-                ],
-                correctAnswers: [2], // DateTime.LocalNow()
-                explanation: "Functions that are external to the source system and rely on the Power Query engine's context (like `DateTime.LocalNow()`) cannot be translated into SQL and will typically **break Query Folding** at that step."
-            },
-            
-            // Question 20: DAX (Measures vs Calculated Columns)
-            {
-                id: 20,
-                topic: "DAX",
-                level: "Intermediate",
-                question: "Which calculation type should you **always** use for aggregations that need to dynamically react to user filters (e.g., Sum of Sales displayed in a chart)?",
+                level: "Easy",
+                question: "When creating a visual that needs to display **sales for the last 30 days**, should you create a Calculated Column or a Measure?",
                 options: [
                     "Calculated Column",
                     "Measure",
                     "Custom Column (Power Query)",
                     "Data Grouping"
                 ],
-                correctAnswers: [1], // Measure
-                explanation: "A **Measure** is calculated at query time and dynamically reacts to the Filter Context established by the user's report interaction, whereas a Calculated Column is static."
+                correctAnswers: [1],
+                explanation: "A **Measure** is required because the result must dynamically change based on the current date, filters, and time context."
             },
-            
-            // Question 21: Security (Power BI Gateways)
             {
-                id: 21,
-                topic: "Deployment and Maintenance",
-                level: "Intermediate",
-                question: "When setting up scheduled refresh for an on-premises data source (e.g., a local SQL Server), what credential setting is required for the Gateway connection?",
+                id: 5,
+                topic: "Deployment",
+                level: "Easy",
+                question: "To share reports and collaborate with a team in the Power BI Service, you must publish the content to a:",
                 options: [
-                    "OAuth 2.0 credentials",
-                    "Windows or Basic Authentication credentials with permissions to the data source.",
-                    "Azure Active Directory credentials only.",
-                    "The credentials of the user viewing the report."
+                    "Dashboard",
+                    "App",
+                    "Workspace",
+                    "Dataflow"
                 ],
-                correctAnswers: [1], // Windows or Basic Auth
-                explanation: "The Power BI Gateway must be configured with **credentials (Windows or Basic Auth)** that have the necessary permissions to connect to and extract data from the local data source during the scheduled refresh time."
+                correctAnswers: [2],
+                explanation: "A **Workspace** serves as the container for collaboration and management of reports, datasets, and dashboards for a specific team or project."
             },
             
-            // Question 22: Data Modeling (Cardinality)
+            // --- 10 INTERMEDIATE QUESTIONS (ID 6-15) ---
             {
-                id: 22,
-                topic: "Data Modeling",
-                level: "Intermediate",
-                question: "You are modeling customer survey responses where a customer may submit multiple responses over time. If you incorrectly set the relationship cardinality to **One-to-One** between 'Customer' (1) and 'SurveyResponse' (*), what will be the immediate impact?",
-                options: [
-                    "The model will function normally, but performance will degrade.",
-                    "The relationship will not be established, resulting in cross-filter errors.",
-                    "The data will be incorrectly duplicated in the 'SurveyResponse' table.",
-                    "The model will force the 'SurveyResponse' table to use DirectQuery."
-                ],
-                correctAnswers: [1], // The relationship will not be established
-                explanation: "Power BI will detect that the 'Many' side of the data has duplicate values (i.e., the same customer ID appears multiple times in the fact table), violating the **One-to-One** rule, and will prevent the relationship from being established."
-            },
-            
-            // Question 23: DAX (Iterator Functions)
-            {
-                id: 23,
-                topic: "DAX",
-                level: "Advanced",
-                question: "Which category of DAX functions explicitly requires a **Row Context** (iterating row-by-row over a table) before they can evaluate an expression?",
-                options: [
-                    "Time Intelligence functions (e.g., TOTALYTD)",
-                    "Context Modification functions (e.g., CALCULATE)",
-                    "Iterator functions (e.g., SUMX, AVERAGEX)",
-                    "Table functions (e.g., FILTER)"
-                ],
-                correctAnswers: [2], // Iterator functions
-                explanation: "**Iterator functions** (ending in X, like SUMX and AVERAGEX) are specifically designed to iterate over rows of a specified table, creating a Row Context for each row to evaluate an expression."
-            },
-            
-            // Question 24: Data Preparation (Incremental Refresh)
-            {
-                id: 24,
-                topic: "Deployment and Maintenance",
-                level: "Advanced",
-                question: "When configuring Incremental Refresh for a large dataset, which of the following is an absolute **requirement** for the source table?",
-                options: [
-                    "The table must be stored in Azure Blob Storage.",
-                    "The Power BI Desktop file must be less than 1GB.",
-                    "The table must contain a date/datetime column used to define the refresh range.",
-                    "The dataset must be connected using the Import connectivity mode."
-                ],
-                correctAnswers: [2], // Date/datetime column
-                explanation: "Incremental Refresh requires a date/datetime column in the source table. Two M parameters, **RangeStart** and **RangeEnd**, are used to dynamically filter this column for partial refreshes."
-            },
-            
-            // Question 25: Visualization (Slicer Syncing)
-            {
-                id: 25,
-                topic: "Visualization and Analysis",
-                level: "Intermediate",
-                question: "You have two report pages, 'Overview' and 'Detail'. You want a slicer placed on the 'Overview' page to also filter the visuals on the 'Detail' page. Which Power BI Desktop setting must you use?",
-                options: [
-                    "Set the visual interaction to 'Filter'.",
-                    "Use the 'Sync slicers' panel.",
-                    "Set the filter direction to 'Both'.",
-                    "Define a custom DAX measure for cross-page filtering."
-                ],
-                correctAnswers: [1], // Sync slicers panel
-                explanation: "The **Sync slicers** panel in Power BI Desktop is the dedicated tool for controlling how a single slicer affects visuals across multiple report pages simultaneously."
-            },
-            
-            // Question 26: Data Modeling (Factless Fact Table)
-            {
-                id: 26,
-                topic: "Data Modeling",
-                level: "Advanced",
-                question: "A **Factless Fact Table** is primarily used to track:",
-                options: [
-                    "The average value of a numeric metric.",
-                    "Events or coverage, not involving numeric measures (e.g., attendance or eligibility).",
-                    "The hierarchy of a dimension table.",
-                    "Calculations that are slow to execute."
-                ],
-                correctAnswers: [1], // Events or coverage
-                explanation: "A Factless Fact Table records events or coverage (like promotions run or students enrolled in courses) where there are no inherent measures (sales amount, quantity, etc.) to aggregate."
-            },
-            
-            // Question 27: DAX (Filter Context Override)
-            {
-                id: 27,
-                topic: "DAX",
-                level: "Advanced",
-                question: "You use `CALCULATE(SUM('Sales'[Amount]), 'Product'[Color] = \"Red\")`. If the visual already has a filter context for 'Product'[Color] = \"Blue\", what is the result?",
-                options: [
-                    "Sales for blue products.",
-                    "Sales for red products.",
-                    "Sales for products that are both red and blue.",
-                    "An error, as the contexts conflict."
-                ],
-                correctAnswers: [1], // Sales for red products
-                explanation: "Filters provided as arguments to `CALCULATE` **override** existing filters on the same column. The 'Blue' filter context is overwritten by the 'Red' filter argument, isolating the calculation to red products."
-            },
-            
-            // Question 28: Performance (Aggregations)
-            {
-                id: 28,
-                topic: "Performance Tuning",
-                level: "Advanced",
-                question: "What is the key benefit of implementing **Aggregations** in a large Power BI model?",
-                options: [
-                    "It ensures 100% Query Folding for DirectQuery sources.",
-                    "It allows reports to access summarized data without querying the detailed fact tables.",
-                    "It automatically creates a Date table for time intelligence.",
-                    "It restricts user access based on row security."
-                ],
-                correctAnswers: [1], // Access summarized data
-                explanation: "**Aggregations** involve pre-calculated summary tables. Power BI redirects the query to the smaller, faster aggregate table if it can answer the question, greatly improving performance."
-            },
-            
-            // Question 29: Data Preparation (Custom Data Types)
-            {
-                id: 29,
+                id: 6,
                 topic: "Data Preparation",
                 level: "Intermediate",
-                question: "You want to import data from a Web API and organize the resulting JSON structure into clean tables. Which Power Query feature is primarily used for navigating and extracting data from complex, hierarchical columns?",
+                question: "Which Power Query transformation is used to combine the data from two different tables that have the same column structure but different rows (e.g., Sales 2024 and Sales 2025)?",
                 options: [
-                    "Unpivot Columns",
-                    "Drill Down",
-                    "Expand Column",
-                    "Group By"
+                    "Merge Queries",
+                    "Append Queries",
+                    "Group By",
+                    "Pivot Column"
                 ],
-                correctAnswers: [2], // Expand Column
-                explanation: "The **Expand Column** feature is used on structured columns (like 'Record' or 'List' columns resulting from JSON/Web connectors) to unpack the nested values into new, flat columns."
+                correctAnswers: [1],
+                explanation: "**Append Queries** is used to stack rows of multiple tables together when they share the same schema."
+            },
+            {
+                id: 7,
+                topic: "Data Modeling",
+                level: "Intermediate",
+                question: "Why should you **hide** the primary key columns (e.g., CustomerKey) in the Dimension tables from the Report View?",
+                options: [
+                    "To save memory in the model.",
+                    "To prevent end-users from mistakenly using them in visuals and filters.",
+                    "Hiding them prevents the relationship from being active.",
+                    "They are automatically hidden if RLS is applied."
+                ],
+                correctAnswers: [1],
+                explanation: "Hiding key columns prevents end-users from dragging them onto visuals, as they serve a technical purpose (relationships) and rarely provide meaningful information to users."
+            },
+            {
+                id: 8,
+                topic: "DAX",
+                level: "Intermediate",
+                question: "You need to calculate the **Gross Margin** (`Gross Profit / Sales Amount`). Should you use the `/` operator or the `DIVIDE` function in DAX, and why?",
+                options: [
+                    "`/` because it is faster to execute.",
+                    "`DIVIDE` because it handles division by zero error gracefully.",
+                    "`/` because `DIVIDE` is an M function.",
+                    "`DIVIDE` because it supports multi-threading better."
+                ],
+                correctAnswers: [1],
+                explanation: "The **DIVIDE** function (index 1) is preferred because it safely handles division by zero by allowing an optional result (e.g., BLANK or 0) instead of returning an error."
+            },
+            {
+                id: 9,
+                topic: "Visualization",
+                level: "Intermediate",
+                question: "When applying a slicer to a column in your data, which Power BI feature should you use to prevent the slicer from filtering a specific visual on the same page?",
+                options: [
+                    "Visual Interactions",
+                    "Report Tooltips",
+                    "Cross-filter Direction",
+                    "Field Parameters"
+                ],
+                correctAnswers: [0],
+                explanation: "The **Visual Interactions** setting (Format menu) allows you to define how one visual (like a slicer) affects every other visual on the page, allowing you to explicitly disable filtering on certain targets."
+            },
+            {
+                id: 10,
+                topic: "Deployment",
+                level: "Intermediate",
+                question: "A report published to the Power BI Service uses data sourced from an on-premises SQL Server. To enable scheduled refresh, which component is required?",
+                options: [
+                    "Azure Analysis Services",
+                    "A VPN connection",
+                    "Power BI Gateway (Standard or Personal)",
+                    "A Premium Capacity license"
+                ],
+                correctAnswers: [2],
+                explanation: "The **Power BI Gateway** acts as a secure bridge between the Power BI Service (Cloud) and data sources residing on your local network (on-premises)."
+            },
+            {
+                id: 11,
+                topic: "Data Preparation",
+                level: "Intermediate",
+                question: "Why might you disable the 'Enable Load' option for a staging table in Power Query?",
+                options: [
+                    "To ensure the table is hidden from RLS users.",
+                    "To prevent the table from consuming memory in the data model.",
+                    "To enforce Query Folding.",
+                    "To enable the table to be used in DirectQuery mode."
+                ],
+                correctAnswers: [1],
+                explanation: "Disabling **Enable Load** means the table is only used in Power Query as an intermediate step (staging or reference) but is not loaded into the VertiPaq engine, saving memory."
+            },
+            {
+                id: 12,
+                topic: "Data Modeling",
+                level: "Intermediate",
+                question: "What is the primary benefit of replacing many small dimension tables with a single, consolidated **Role-Playing Dimension** (e.g., a single Date table used for OrderDate, ShipDate, and DeliveryDate)?",
+                options: [
+                    "Eliminates the need for DAX time intelligence functions.",
+                    "Simplifies the model schema and reduces data redundancy.",
+                    "Allows all relationships to be marked as active simultaneously.",
+                    "It is the only way to enable bidirectional filtering."
+                ],
+                correctAnswers: [1],
+                explanation: "Using a single Role-Playing Dimension (like a single Date table) simplifies the model schema and ensures all date context calculations rely on a single, standardized column."
+            },
+            {
+                id: 13,
+                topic: "DAX",
+                level: "Intermediate",
+                question: "To count the number of **unique** customers who placed orders, which DAX function should you use?",
+                options: [
+                    "COUNT('Sales'[CustomerID])",
+                    "COUNTROWS('Customer')",
+                    "DISTINCTCOUNT('Sales'[CustomerID])",
+                    "SUMX('Sales', 1)"
+                ],
+                correctAnswers: [2],
+                explanation: "**DISTINCTCOUNT** is specifically designed to count the number of unique, non-blank values in a column, which is necessary for counting unique customers or products."
+            },
+            {
+                id: 14,
+                topic: "Deployment",
+                level: "Intermediate",
+                question: "When publishing a report, which Power BI license type allows users to view the report and interact with it without needing a Power BI Pro license themselves, provided the workspace is assigned to it?",
+                options: [
+                    "Power BI Desktop License",
+                    "Power BI Free License",
+                    "Power BI Premium Capacity License",
+                    "Trial License"
+                ],
+                correctAnswers: [2],
+                explanation: "A **Power BI Premium Capacity License** allows free or Pro users to consume content in the assigned workspace without requiring a separate Pro license, a key concept in scaling deployment."
+            },
+            {
+                id: 15,
+                topic: "Visualization",
+                level: "Intermediate",
+                question: "Which of the following visuals is **best suited** for showing trends over time when you have a continuous date axis (e.g., Daily Sales)?",
+                options: [
+                    "Bar Chart",
+                    "Pie Chart",
+                    "Line Chart",
+                    "Gauge"
+                ],
+                correctAnswers: [2],
+                explanation: "The **Line Chart** is the most effective visual for displaying continuous data and trends over a time series."
             },
             
-            // Question 30: Visualization (Report Tooltips)
+            // --- 5 YES/NO QUESTIONS CONVERTED TO STANDARD MULTIPLE CHOICE (ID 16-20) ---
+            
+            // Question 16: Data Modeling / Performance (Intermediate) - Formerly Y/N Scenario 1
+            {
+                id: 16,
+                topic: "Data Modeling / Performance",
+                level: "Intermediate",
+                question: "Which action has the **most significant impact** on minimizing the size and memory footprint of a large Power BI data model?",
+                options: [
+                    "Using only Integer columns for numerical values.",
+                    "Removing columns that are not used for measures, filtering, or visuals.",
+                    "Applying column compression in the Power Query Editor.",
+                    "Creating a single Measure table for all DAX formulas."
+                ],
+                correctAnswers: [1],
+                explanation: "The single most effective action to reduce model size is removing **unnecessary columns** (index 1) in Power Query, as every column consumes memory in the VertiPaq engine, regardless of its usage."
+            },
+            // Question 17: Data Modeling / Performance (Intermediate) - Formerly Y/N Scenario 2
+            {
+                id: 17,
+                topic: "Data Modeling / Performance",
+                level: "Intermediate",
+                question: "If you have a Fact table with date keys (OrderDateKey, ShipDateKey), what is the best practice to allow filtering by multiple date types in the Report View?",
+                options: [
+                    "Duplicate the Fact table in Power Query for each date type.",
+                    "Create multiple inactive relationships between the Fact table and a single **Role-Playing Dimension** (Date table).",
+                    "Use a Calculated Column in the Fact table to convert the date key to the date format.",
+                    "Convert the Fact table connectivity mode to DirectQuery."
+                ],
+                correctAnswers: [1],
+                explanation: "The standard solution is to use a single **Role-Playing Dimension** (Date table) with **multiple inactive relationships** (index 1), activating them via the `USERELATIONSHIP` DAX function when needed."
+            },
+            // Question 18: Deployment / Refresh (Intermediate) - Formerly Y/N Scenario 3
+            {
+                id: 18,
+                topic: "Deployment / Refresh",
+                level: "Intermediate",
+                question: "Which of the following is required to ensure RLS (Row-Level Security) filters are applied when users view a published Power BI report in the Service?",
+                options: [
+                    "The report must be shared via a SharePoint site.",
+                    "The users must be explicitly assigned to the RLS roles within the **Power BI Service** security settings.",
+                    "The RLS roles must be defined using the M language.",
+                    "The data source must be using DirectQuery connectivity."
+                ],
+                correctAnswers: [1],
+                explanation: "While RLS roles are *defined* in Power BI Desktop, they must be **assigned to users or security groups** (index 1) within the Power BI Service after publishing to become active."
+            },
+            // Question 19: DAX / Filtering (Intermediate) - Formerly Y/N Scenario 4
+            {
+                id: 19,
+                topic: "DAX / Filtering",
+                level: "Intermediate",
+                question: "You want to create a measure that ignores all filters coming from the 'Customer' dimension table but respects all other filters (like 'Region'). Which DAX function is needed inside `CALCULATE`?",
+                options: [
+                    "ALLSELECTED('Customer')",
+                    "ALLEXCEPT('Customer', 'Region')",
+                    "REMOVEFILTERS('Customer')",
+                    "USERELATIONSHIP('Customer')"
+                ],
+                correctAnswers: [2],
+                explanation: "**REMOVEFILTERS** (which is equivalent to `ALL()`) is the primary function used to clear filtering context from a specific column or table. Using `REMOVEFILTERS('Customer')` will ignore customer filters while preserving filters on 'Region'."
+            },
+            // Question 20: Data Preparation (Intermediate) - Formerly Y/N Scenario 5
+            {
+                id: 20,
+                topic: "Data Preparation / M Language",
+                level: "Intermediate",
+                question: "Which step in Power Query is the **least likely** to break Query Folding when applied to a SQL Server database?",
+                options: [
+                    "Adding an index column.",
+                    "Applying a conditional column with complex nested logic.",
+                    "Filtering rows based on a simple date column condition.",
+                    "Using buffering functions like `Table.Buffer()`."
+                ],
+                correctAnswers: [2],
+                explanation: "Simple actions like **filtering rows** (index 2) or renaming columns directly map to SQL (WHERE or SELECT), making them highly foldable. Complex logic, custom functions, or indexing tend to break folding."
+            },
+            
+            // --- 10 ADVANCED QUESTIONS (ID 21-30) ---
+            
+            // Question 21: DAX (CALCULATETABLE) - Multi-select
+            {
+                id: 21,
+                topic: "DAX / Filtering",
+                level: "Advanced",
+                question: "Which DAX functions can you use to create a **new table** containing only the top 10 customers based on total sales? (Select **TWO** answers)",
+                options: [
+                    "CALCULATETABLE",
+                    "SUMMARIZE",
+                    "RANKX",
+                    "TOPN"
+                ],
+                correctAnswers: [0, 3], // CALCULATETABLE and TOPN
+                explanation: "**TOPN** returns a table expression containing the top N rows, while **CALCULATETABLE** modifies the filter context to evaluate a table expression (as the result of TOPN)."
+            },
+            
+            // Question 22: Data Modeling (Composite Models)
+            {
+                id: 22,
+                topic: "Data Modeling / Connectivity",
+                level: "Advanced",
+                question: "A Composite Model combines data from a large DirectQuery data source with aggregated data loaded via Import mode. When a user creates a visual, under what condition will the **DirectQuery source** be hit?",
+                options: [
+                    "Always, as DirectQuery takes precedence.",
+                    "Only when the query cannot be answered by the Import mode aggregation table.",
+                    "Only when the user is an administrator.",
+                    "Never, as the Import table serves as the cache."
+                ],
+                correctAnswers: [1], // Import aggregation precedence
+                explanation: "The purpose of the Composite Model with aggregations is to hit the smaller, faster Import table whenever possible. The **DirectQuery source is only hit** when the query requires a level of detail not available in the aggregated Import table."
+            },
+            
+            // Question 23: Deployment (RLS Testing)
+            {
+                id: 23,
+                topic: "Deployment / Security",
+                level: "Advanced",
+                question: "After defining Row-Level Security (RLS) roles and publishing a report to the Power BI Service, how must you test RLS roles to ensure they work correctly for specific users?",
+                options: [
+                    "Test the RLS role within Power BI Desktop's Modeling tab before publishing.",
+                    "Publish the report and add the specific user's email address to the security role in the Power BI Service.",
+                    "Publish the report and manually filter the data by the user's name.",
+                    "Set the DAX `USERNAME()` expression to return the test user's name."
+                ],
+                correctAnswers: [1], // Test in Desktop AND assign in Service
+                explanation: "You must **test RLS roles in Power BI Desktop** first, but the final, definitive test requires publishing the report and then **assigning the user or group** to the role in the Power BI Service security settings."
+            },
+            
+            // Question 24: DAX (Context Transition)
+            {
+                id: 24,
+                topic: "DAX / Filtering",
+                level: "Advanced",
+                question: "You have a **Calculated Column** defined as `[Total Sales] = CALCULATE(SUM('Sales'[Amount]))`. When this column is used in a row context (like in a table visual), what value will it return?",
+                options: [
+                    "The total sales for the entire model.",
+                    "The total sales for the current row's category only.",
+                    "An error, as CALCULATE cannot be used in a Calculated Column.",
+                    "The sum of sales for the current row."
+                ],
+                correctAnswers: [0], // Total Sales for the entire model
+                explanation: "When `CALCULATE` is used without any filter arguments, it performs a **context transition** which converts the row context into a filter context. Since no filter is provided, it calculates the measure for the **entire data model**, often returning the grand total repeatedly."
+            },
+            
+            // Question 25: Data Preparation (Query Parameters)
+            {
+                id: 25,
+                topic: "Data Preparation",
+                level: "Advanced",
+                question: "You want to dynamically filter a large table in Power Query based on the current date, but avoid breaking Query Folding. Which approach is recommended?",
+                options: [
+                    "Use the Power Query UI to filter the column, which generates foldable M code.",
+                    "Use a custom column with the M function `DateTime.LocalNow()` to filter the source.",
+                    "Use a DAX measure with `TODAY()` to filter the visual.",
+                    "Use an R or Python visual to filter the table."
+                ],
+                correctAnswers: [0], // Power Query UI
+                explanation: "The Power Query UI is designed to generate highly efficient, **foldable M code** whenever possible for relational sources (index 0). Custom M code using non-foldable functions will break the folding."
+            },
+            
+            // Question 26: Performance Tuning (Relationships)
+            {
+                id: 26,
+                topic: "Performance Tuning / Data Modeling",
+                level: "Advanced",
+                question: "Which scenario presents the most significant **performance risk** in a data model with millions of rows?",
+                options: [
+                    "Using a single Date table linked to multiple Fact tables.",
+                    "Setting the cross-filter direction to **Both** on a relationship to filter a large Fact table.",
+                    "Using `SUM` measures instead of `SUMX` measures.",
+                    "Hiding key columns from the Report View."
+                ],
+                correctAnswers: [1], // Bidirectional filter on large table
+                explanation: "Setting the cross-filter direction to **Both** (bidirectional) on a relationship can introduce ambiguous query paths and significantly degrade performance, especially when filtering large Fact tables."
+            },
+            
+            // Question 27: DAX (Time Intelligence) - Multi-select
+            {
+                id: 27,
+                topic: "DAX / Time Intelligence",
+                level: "Advanced",
+                question: "You need to create a measure that calculates the sales difference between the current day and the same day in the previous week. Which **TWO** DAX functions are required?",
+                options: [
+                    "DATEADD",
+                    "SAMEPERIODLASTYEAR",
+                    "CALCULATE",
+                    "DATESINPERIOD"
+                ],
+                correctAnswers: [0, 2], // DATEADD and CALCULATE
+                explanation: "**CALCULATE** (index 2) is needed to change the filter context, and **DATEADD** (index 0) is used to shift the date context backward by 7 days (`DATEADD('Date'[Date], -7, DAY)`)."
+            },
+            
+            // Question 28: Deployment (Gateways vs Dataflow)
+            {
+                id: 28,
+                topic: "Data Preparation / Deployment",
+                level: "Advanced",
+                question: "You are building a reusable set of cleaned Dimension tables that will be consumed by five different Power BI reports. Where should you host and manage these common tables for efficiency and consistency?",
+                options: [
+                    "In a Shared folder on the local network.",
+                    "In five separate Power BI Desktop files.",
+                    "In a Power BI Dataflow.",
+                    "As a new Calculated Table in Power BI Desktop."
+                ],
+                correctAnswers: [2], // Power BI Dataflow
+                explanation: "A **Power BI Dataflow** is the best solution for hosting reusable, centrally managed ETL logic and data (Dimension tables) that can be consumed by multiple datasets across different workspaces."
+            },
+            
+            // Question 29: Visualization (Custom Tooltips)
+            {
+                id: 29,
+                topic: "Visualization / Analysis",
+                level: "Advanced",
+                question: "You are using a custom visual that supports additional data fields for advanced functionality. Where must you configure the usage of these fields?",
+                options: [
+                    "The Visualizations pane's field wells.",
+                    "The Fields tab in the Modeling view.",
+                    "The Format pane of the visual.",
+                    "The Data View of the model."
+                ]
+                ,correctAnswers: [0], // Visualizations pane's field wells
+                explanation: "All fields used by a visual, whether for basic display or advanced functions (like tooltips or data labels), must be assigned to the appropriate **field wells** in the Visualizations pane."
+            },
+            
+            // Question 30: Performance Tuning (Calculated Columns)
             {
                 id: 30,
-                topic: "Visualization and Analysis",
-                level: "Intermediate",
-                question: "How do you create a **Report Tooltip** page that displays detailed metrics when a user hovers over a data point in a visual?",
+                topic: "Performance Tuning / Data Modeling",
+                level: "Advanced",
+                question: "You have a complex query logic that runs slowly in Power Query. After identifying the non-folding step, what is the best technique to restore Query Folding for all subsequent steps?",
                 options: [
-                    "Use the 'Focus Mode' option on the visual.",
-                    "Set the page size to 'Tooltip' and link it in the Visual Formatting pane.",
-                    "Write a DAX measure that returns HTML code for the tooltip.",
-                    "Create a bookmark that focuses on the tooltip."
+                    "Convert the query to DirectQuery mode.",
+                    "Use the `Value.NativeQuery()` M function immediately after the non-folding step.",
+                    "Manually change the data source credentials in the Service.",
+                    "Split the query into two queries: one that folds and one that processes local data."
                 ],
-                correctAnswers: [1], // Set page size and link in formatting
-                explanation: "To create a Report Tooltip, you must set the page type to **Tooltip** in the Page Information settings, and then go to the visual's **Format pane** to select that page as the Tooltip page source."
+                correctAnswers: [3],
+                explanation: "The recommended technique is to **split the query** (index 3). Create a reference query after the non-folding step and then apply subsequent folding transformations to the new query, allowing Query Folding to resume."
             }
         ];
         
         // Array containing the raw text for the list items on the start screen
         const startInfoRaw = [
-            '**30 multiple-choice questions**',
+            '**30 questions** (5 Easy, 15 Intermediate, 10 Advanced).',
             'Practice Mode (no time limit)',
             'Questions may have **one or multiple** correct answers.',
             'Minimum passing score: **70%**'
@@ -922,18 +907,15 @@
 
 
         // --- INITIAL RENDER FIX ---
-        // Function to render the start screen info list with HTML formatting
         function renderStartInfo() {
             startInfoList.innerHTML = '';
             startInfoRaw.forEach(itemText => {
                 const item = document.createElement('li');
-                // Use markdownToHtmlBold for the list item content
                 item.innerHTML = '<i class="fas fa-check-circle"></i> ' + markdownToHtmlBold(itemText);
                 startInfoList.appendChild(item);
             });
         }
         
-        // Execute immediately when the page loads
         renderStartInfo();
 
 
@@ -944,7 +926,6 @@
         finishBtn.addEventListener('click', showFinalResults);
         flagIcon.addEventListener('click', toggleFlag);
         
-        // NEW EVENT LISTENER for the review button
         reviewToggleButton.addEventListener('click', toggleReviewVisibility);
 
 
@@ -957,7 +938,6 @@
             } else {
                 reviewContainer.style.display = 'none';
                 reviewToggleButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer Review';
-                // Scroll back up to the score summary after hiding
                 finalResultsScreen.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
@@ -970,30 +950,33 @@
             progressContainer.style.display = 'block';
             quizFooter.style.display = 'flex';
             
-            // Reset state for a new test
             userAnswers = quizQuestions.map(() => []);
             isFlagged = new Array(quizQuestions.length).fill(false);
             
-            // Setup pager
             createPager();
 
-            // Load first question
             loadQuestion(0);
         }
 
         function loadQuestion(index) {
             currentQuestionIndex = index;
             const q = quizQuestions[index];
-
+            
+            // Check if it's a Yes/No Scenario question (No longer needed since they are converted, but good as a placeholder)
+            const isYNScenario = q.level === "Yes/No Scenario";
+            
             // 1. Update Header & Progress
             questionCounter.textContent = `Question ${index + 1} of ${quizQuestions.length}`;
             progressBar.style.width = `${((index + 1) / quizQuestions.length) * 100}%`;
             
-            // 2. Update Question Content
+            // 2. Update Question Content 
+            // Since all questions are now standard, we rely only on the main question property.
             questionText.innerHTML = markdownToHtmlBold(q.question);
             
             // 3. Render Options
             optionsList.innerHTML = '';
+            
+            // Determine input type based on the array length
             const isMultiSelect = q.correctAnswers.length > 1;
             const inputType = isMultiSelect ? 'checkbox' : 'radio';
             
@@ -1065,20 +1048,18 @@
             let answers = userAnswers[qIndex];
             
             if (inputType === 'radio') {
-                // Clear all and set new answer for radio buttons
                 userAnswers[qIndex] = [optionIndex];
             } else if (inputType === 'checkbox') {
-                // Toggle for checkboxes
                 const indexInArray = answers.indexOf(optionIndex);
                 if (indexInArray > -1) {
-                    answers.splice(indexInArray, 1); // Remove
+                    answers.splice(indexInArray, 1);
                 } else {
-                    answers.push(optionIndex); // Add
+                    answers.push(optionIndex);
                 }
                 userAnswers[qIndex] = answers;
             }
             
-            updatePager(); // Mark question as answered
+            updatePager();
         }
 
         function navigateQuestion(direction) {
@@ -1096,10 +1077,10 @@
 
         function updateFlagIcon(index) {
             if (isFlagged[index]) {
-                flagIcon.style.color = '#ffc107'; // Yellow when flagged
+                flagIcon.style.color = '#ffc107';
                 flagIcon.title = "Unflag for Review";
             } else {
-                flagIcon.style.color = '#6c757d'; // Gray/Default when not flagged
+                flagIcon.style.color = '#6c757d';
                 flagIcon.title = "Flag for Review";
             }
         }
@@ -1112,20 +1093,19 @@
             quizFooter.style.display = 'none';
             finalResultsScreen.style.display = 'block';
 
-            // Reset review display state for the new test run
             reviewContainer.style.display = 'none';
             reviewToggleButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer Review';
             
             let correctCount = 0;
-            const totalQuestions = quizQuestions.length;
+            const totalQuestions = quizQuestions.length; 
             reviewList.innerHTML = '';
 
             // 1. Calculate Score
-            quizQuestions.forEach((q, i) => {
+            quizQuestions.forEach((q, i) => { // This loop runs 30 times
+                // FIX: Removed try/catch, relying on stable data to avoid runtime crash.
                 const userSelection = userAnswers[i].sort((a, b) => a - b);
                 const correctSelection = q.correctAnswers.sort((a, b) => a - b);
 
-                // Compare arrays for correctness
                 const isCorrect = userSelection.length === correctSelection.length && 
                                   userSelection.every((val, index) => val === correctSelection[index]);
 
@@ -1141,7 +1121,10 @@
                 const statusIconHtml = isCorrect 
                     ? '<i class="fas fa-check-circle review-status-icon correct"></i>'
                     : '<i class="fas fa-times-circle review-status-icon incorrect"></i>';
-
+                
+                // Since all are now standard MCQs, the review text is simple:
+                const reviewQuestionText = markdownToHtmlBold(q.question);
+                
                 const userAnswerText = userSelection.length > 0 
                     ? userSelection.map(idx => `<strong>${q.options[idx]}</strong>`).join(' | ')
                     : '<em>Not Answered</em>';
@@ -1150,7 +1133,7 @@
 
                 reviewItem.innerHTML = `
                     ${statusIconHtml}
-                    <div class="review-q-text">Question ${i + 1}: ${markdownToHtmlBold(q.question)}</div>
+                    <div class="review-q-text">Question ${i + 1} (${q.level}): ${reviewQuestionText}</div>
                     <p>
                         <strong>Your Answer:</strong> ${userAnswerText}
                         ${!isCorrect ? '<br><strong>Correct Answer:</strong> ' + correctAnswerText : ''}
@@ -1162,7 +1145,7 @@
                 reviewList.appendChild(reviewItem);
             });
 
-            // 3. Display Final Score
+            // 3. Display Final Score (using dynamic totalQuestions)
             const finalScorePercentage = Math.round((correctCount / totalQuestions) * 100);
             const isApproved = finalScorePercentage >= 70;
 
